@@ -26,7 +26,6 @@ const Hero = () => {
     citiesCovered: 0,
     averageRating: 0
   });
-  const [showVideo, setShowVideo] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -109,210 +108,225 @@ const Hero = () => {
 
       {/* Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full opacity-20 animate-float"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-r from-accent-400 to-warning-400 rounded-full opacity-20 animate-float animate-delay-200"></div>
-        <div className="absolute bottom-40 left-20 w-24 h-24 bg-gradient-to-r from-secondary-400 to-primary-400 rounded-full opacity-20 animate-float animate-delay-500"></div>
+        <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full opacity-20 animate-float"></div>
+        <div className="absolute top-20 sm:top-40 right-10 sm:right-20 w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-r from-accent-400 to-warning-400 rounded-full opacity-20 animate-float animate-delay-200"></div>
+        <div className="absolute bottom-20 sm:bottom-40 left-10 sm:left-20 w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-r from-secondary-400 to-primary-400 rounded-full opacity-20 animate-float animate-delay-500"></div>
+        <div className="absolute top-1/2 right-5 sm:right-10 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-warning-400 to-accent-400 rounded-full opacity-15 animate-float animate-delay-700 hidden sm:block"></div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container-responsive py-20 sm:py-24 lg:py-32">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-8 animate-fade-in">
-            <StarIcon className="w-5 h-5 text-yellow-400" />
-            <span className="text-white font-medium">Trusted by 15,000+ Students & Professionals</span>
-          </div>
-
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold text-white mb-6 animate-slide-up">
-            Find Your
-            <span className="block bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
-              Perfect PG
-            </span>
-            <span className="block text-3xl sm:text-4xl lg:text-5xl text-gray-200 mt-2">
-              In Minutes, Not Days
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-lg sm:text-xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed animate-slide-up animate-delay-200">
-            Discover comfortable, affordable, and verified PG accommodations across India. 
-            Join thousands of happy residents who found their home away from home.
-          </p>
-
-          {/* Enhanced Search Form */}
-          <div className="bg-white/95 dark:bg-dark-800/95 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-2xl mb-12 animate-zoom-in animate-delay-300">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-              {/* Location Search */}
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  <MapPinIcon className="w-4 h-4 inline mr-1" />
-                  Location
-                </label>
-                <SearchAutocomplete 
-                  onSearch={handleSearch}
-                  placeholder="Enter city, area, or PG name..."
-                />
-              </div>
-
-              {/* Gender Filter */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  <UserGroupIcon className="w-4 h-4 inline mr-1" />
-                  Gender Preference
-                </label>
-                <select
-                  className="input"
-                  value={searchData.gender}
-                  onChange={(e) => setSearchData({...searchData, gender: e.target.value})}
-                >
-                  <option value="">Any</option>
-                  <option value="boys">Boys Only</option>
-                  <option value="girls">Girls Only</option>
-                  <option value="both">Co-ed</option>
-                </select>
-              </div>
-
-              {/* Budget Range */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  <CurrencyRupeeIcon className="w-4 h-4 inline mr-1" />
-                  Max Budget
-                </label>
-                <select
-                  className="input"
-                  value={searchData.maxPrice}
-                  onChange={(e) => setSearchData({...searchData, maxPrice: e.target.value})}
-                >
-                  <option value="">Any Budget</option>
-                  <option value="10000">Under ₹10,000</option>
-                  <option value="15000">Under ₹15,000</option>
-                  <option value="20000">Under ₹20,000</option>
-                  <option value="25000">Under ₹25,000</option>
-                  <option value="30000">₹30,000+</option>
-                </select>
-              </div>
+      <div className="relative z-10 container-responsive py-12 sm:py-16 lg:py-15">
+        {/* Hero Section - Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center min-h-[80vh] lg:min-h-[70vh]">
+          {/* Left Column - Content */}
+          <div className="text-center lg:text-left order-1 lg:order-1">
+            {/* Badge */}
+            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-6 sm:mb-8 animate-fade-in">
+              <StarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+              <span className="text-white font-medium text-sm sm:text-base">Trusted by 15,000+ Students & Professionals</span>
             </div>
 
-            {/* Search Button */}
-            <button
-              onClick={() => handleSearch(searchData)}
-              className="w-full bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 hover:from-primary-700 hover:via-secondary-700 hover:to-accent-700 text-white font-bold py-4 px-8 rounded-2xl flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group"
-            >
-              <MagnifyingGlassIcon className="w-6 h-6 group-hover:animate-pulse" />
-              <span className="text-lg">Search Perfect PGs</span>
-              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+            {/* Main Heading */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-display font-bold text-white mb-4 sm:mb-6 animate-slide-up leading-tight">
+              Find Your
+              <span className="block bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+                Perfect PG
+              </span>
+              <span className="block text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl text-gray-200 mt-2">
+                In Minutes, Not Days
+              </span>
+            </h1>
 
-            {/* Features List */}
-            <div className="flex flex-wrap justify-center gap-4 mt-6">
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg lg:text-xl text-gray-200 mb-8 sm:mb-12 max-w-2xl mx-auto xl:mx-0 leading-relaxed animate-slide-up animate-delay-200">
+              Discover comfortable, affordable, and verified PG accommodations across India. 
+              Join thousands of happy residents who found their home away from home.
+            </p>
+
+            {/* Features List - Mobile Hidden, Desktop Visible */}
+            <div className="hidden lg:flex flex-wrap gap-4 mb-8">
               {features.map((feature, index) => (
                 <div 
                   key={index}
-                  className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 animate-fade-in"
+                  className="flex items-center space-x-2 text-sm text-gray-300 animate-fade-in bg-white/5 backdrop-blur-sm rounded-full px-4 py-2"
                   style={{ animationDelay: `${500 + index * 100}ms` }}
                 >
-                  <CheckCircleIcon className="w-4 h-4 text-success-500" />
+                  <CheckCircleIcon className="w-4 h-4 text-success-400" />
                   <span>{feature}</span>
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Popular Cities */}
-          <div className="mb-12 animate-slide-up animate-delay-500">
-            <h3 className="text-xl font-semibold text-white mb-6">Popular Cities</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {popularCities.map((city, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleQuickSearch(city.name)}
-                  className={`bg-gradient-to-r ${city.gradient} p-4 rounded-2xl text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 group`}
-                >
-                  <div className="text-lg font-bold">{city.name}</div>
-                  <div className="text-sm opacity-90">{city.count} PGs</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div className="text-center animate-bounce-in animate-delay-300">
-              <div className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                {stats.totalPGs.toLocaleString()}+
-              </div>
-              <div className="text-gray-300">Verified PGs</div>
-            </div>
-            <div className="text-center animate-bounce-in animate-delay-500">
-              <div className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                {stats.totalUsers.toLocaleString()}+
-              </div>
-              <div className="text-gray-300">Happy Residents</div>
-            </div>
-            <div className="text-center animate-bounce-in animate-delay-700">
-              <div className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                {stats.citiesCovered}+
-              </div>
-              <div className="text-gray-300">Cities Covered</div>
-            </div>
-            <div className="text-center animate-bounce-in animate-delay-1000">
-              <div className="text-3xl lg:text-4xl font-bold text-white mb-2 flex items-center justify-center">
-                {stats.averageRating}
-                <StarIcon className="w-8 h-8 text-yellow-400 ml-1" />
-              </div>
-              <div className="text-gray-300">Average Rating</div>
+            {/* CTA Buttons - Desktop Only */}
+            <div className="hidden lg:flex items-center space-x-4 animate-slide-up animate-delay-700">
+              <button
+                onClick={() => navigate('/listings')}
+                className="btn btn-primary btn-lg shadow-2xl hover:shadow-glow transform hover:scale-[1.02]"
+              >
+                Explore All PGs
+                <ArrowRightIcon className="w-5 h-5 ml-2" />
+              </button>
+              
+              <button
+                onClick={() => navigate('/about')}
+                className="btn btn-ghost btn-lg bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 shadow-xl"
+              >
+                <PlayIcon className="w-5 h-5 mr-2" />
+                Learn More
+              </button>
             </div>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-slide-up animate-delay-700">
+          {/* Mobile/Tablet CTA Buttons */}
+          <div className="lg:hidden flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-slide-up animate-delay-700 order-2">
             <button
               onClick={() => navigate('/listings')}
-              className="btn btn-primary btn-xl shadow-2xl hover:shadow-glow transform hover:scale-105"
+              className="btn btn-primary btn-lg sm:btn-xl shadow-2xl hover:shadow-glow transform hover:scale-[1.02] w-full sm:w-auto"
             >
               Explore All PGs
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </button>
             
             <button
-              onClick={() => setShowVideo(true)}
-              className="btn btn-ghost btn-xl bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 shadow-xl"
+              onClick={() => navigate('/about')}
+              className="btn btn-ghost btn-lg sm:btn-xl bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 shadow-xl w-full sm:w-auto transform hover:scale-[1.02] transition-all duration-300"
             >
               <PlayIcon className="w-5 h-5 mr-2" />
-              Watch Demo
+              Learn More
             </button>
+          </div>
+
+          {/* Right Column - Search Form */}
+          <div className="order-3 lg:order-2 mt-8 sm:mt-12 lg:mt-0">
+            <div className="bg-white/95 dark:bg-dark-800/95 backdrop-blur-sm rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl animate-zoom-in animate-delay-300 max-w-lg mx-auto lg:mx-0 lg:max-w-none">
+              <div className="space-y-4 sm:space-y-6">
+                {/* Location Search */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <MapPinIcon className="w-4 h-4 inline mr-1" />
+                    Location
+                  </label>
+                  <SearchAutocomplete 
+                    onSearch={handleSearch}
+                    placeholder="Enter city, area, or PG name..."
+                  />
+                </div>
+
+                {/* Gender Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <UserGroupIcon className="w-4 h-4 inline mr-1" />
+                    Gender Preference
+                  </label>
+                  <select
+                    className="w-full px-3 py-3 border border-gray-200 dark:border-dark-600 rounded-xl bg-white dark:bg-dark-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-sm"
+                    value={searchData.gender}
+                    onChange={(e) => setSearchData({...searchData, gender: e.target.value})}
+                  >
+                    <option value="">Any</option>
+                    <option value="boys">Boys Only</option>
+                    <option value="girls">Girls Only</option>
+                    <option value="both">Co-ed</option>
+                  </select>
+                </div>
+
+                {/* Budget Range */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <CurrencyRupeeIcon className="w-4 h-4 inline mr-1" />
+                    Max Budget
+                  </label>
+                  <select
+                    className="w-full px-3 py-3 border border-gray-200 dark:border-dark-600 rounded-xl bg-white dark:bg-dark-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-sm"
+                    value={searchData.maxPrice}
+                    onChange={(e) => setSearchData({...searchData, maxPrice: e.target.value})}
+                  >
+                    <option value="">Any Budget</option>
+                    <option value="10000">Under ₹10,000</option>
+                    <option value="15000">Under ₹15,000</option>
+                    <option value="20000">Under ₹20,000</option>
+                    <option value="25000">Under ₹25,000</option>
+                    <option value="30000">₹30,000+</option>
+                  </select>
+                </div>
+
+                {/* Search Button */}
+                <button
+                  onClick={() => handleSearch(searchData)}
+                  className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 group"
+                >
+                  <MagnifyingGlassIcon className="w-5 h-5 group-hover:animate-pulse" />
+                  <span className="text-sm">Search Perfect PGs</span>
+                  <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* Features List - Mobile/Tablet Only */}
+                <div className="lg:hidden flex flex-wrap justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
+                  {features.map((feature, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 animate-fade-in bg-gray-50 dark:bg-dark-700 rounded-full px-2 sm:px-3 py-1"
+                      style={{ animationDelay: `${500 + index * 100}ms` }}
+                    >
+                      <CheckCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 text-success-500" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Popular Cities */}
+        <div className="mt-12 sm:mt-16 lg:mt-20 animate-slide-up animate-delay-500">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-6 sm:mb-8 text-center">Popular Cities</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {popularCities.map((city, index) => (
+              <button
+                key={index}
+                onClick={() => handleQuickSearch(city.name)}
+                className={`bg-gradient-to-r ${city.gradient} p-3 sm:p-4 rounded-xl sm:rounded-2xl text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 group`}
+              >
+                <div className="text-sm sm:text-lg font-bold">{city.name}</div>
+                <div className="text-xs sm:text-sm opacity-90">{city.count} PGs</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12 sm:mt-16 lg:mt-20">
+          <div className="text-center animate-bounce-in animate-delay-300 bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+              {stats.totalPGs.toLocaleString()}+
+            </div>
+            <div className="text-gray-300 text-sm sm:text-base">Verified PGs</div>
+          </div>
+          <div className="text-center animate-bounce-in animate-delay-500 bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+              {stats.totalUsers.toLocaleString()}+
+            </div>
+            <div className="text-gray-300 text-sm sm:text-base">Happy Residents</div>
+          </div>
+          <div className="text-center animate-bounce-in animate-delay-700 bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+              {stats.citiesCovered}+
+            </div>
+            <div className="text-gray-300 text-sm sm:text-base">Cities Covered</div>
+          </div>
+          <div className="text-center animate-bounce-in animate-delay-1000 bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 flex items-center justify-center">
+              {stats.averageRating}
+              <StarIcon className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 ml-1" />
+            </div>
+            <div className="text-gray-300 text-sm sm:text-base">Average Rating</div>
           </div>
         </div>
       </div>
 
-      {/* Video Modal */}
-      {showVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="relative max-w-4xl w-full mx-4">
-            <button
-              onClick={() => setShowVideo(false)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 text-2xl"
-            >
-              ×
-            </button>
-            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl aspect-video">
-              <iframe
-                width="100%"
-                height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                title="FindMyPG Demo"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-4 sm:bottom-8 right-4 sm:right-8 animate-bounce hidden sm:block">
         <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
           <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
         </div>

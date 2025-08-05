@@ -19,7 +19,8 @@ import {
   PlusCircleIcon,
   ChartBarIcon,
   InformationCircleIcon,
-  PhoneIcon
+  PhoneIcon,
+  EllipsisHorizontalIcon
 } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import SearchAutocomplete from '../common/SearchAutocomplete';
@@ -27,24 +28,10 @@ import NotificationBell from '../common/NotificationBell';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const searchRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSearch(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -55,8 +42,8 @@ const Header = () => {
     const queryParams = new URLSearchParams();
     if (searchData.city) queryParams.append('city', searchData.city);
     if (searchData.query) queryParams.append('q', searchData.query);
+    if (searchData.search) queryParams.append('q', searchData.search);
     navigate(`/listings?${queryParams.toString()}`);
-    setShowSearch(false);
   };
 
   const isActivePath = (path) => {
@@ -66,6 +53,9 @@ const Header = () => {
   const navigationLinks = [
     { name: 'Home', href: '/', icon: HomeIcon },
     { name: 'Browse PGs', href: '/listings', icon: BuildingOfficeIcon },
+  ];
+
+  const moreLinks = [
     { name: 'About', href: '/about', icon: InformationCircleIcon },
     { name: 'Contact', href: '/contact', icon: PhoneIcon },
   ];
@@ -78,34 +68,38 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-b border-gray-200 dark:border-dark-700 shadow-lg">
       <div className="container-responsive">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-3 sm:py-4 gap-2 sm:gap-4 lg:gap-8">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group flex-shrink-0">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-110">
-                <BuildingOfficeIcon className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-110 overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="FindMyPG Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-accent-500 to-warning-500 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-accent-500 to-warning-500 rounded-full animate-pulse"></div>
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-2xl font-display font-bold text-gradient">
+            <div className="hidden xs:block sm:block">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-display font-bold text-gradient">
                 FindMyPG
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1 hidden sm:block">
                 Premium Living Spaces
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2 flex-shrink-0 ml-4 xl:ml-8">
             {navigationLinks.map((link) => {
               const Icon = link.icon;
               return (
                 <Link
                   key={link.name}
                   to={link.href}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                  className={`flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 text-sm lg:text-base ${
                     isActivePath(link.href)
                       ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300 shadow-md'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-primary-600 dark:hover:text-primary-400'
@@ -117,6 +111,61 @@ const Header = () => {
               );
             })}
 
+            {/* More Dropdown */}
+            <Menu as="div" className="relative">
+              {({ open }) => (
+                <>
+                  <Menu.Button className={`flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 focus:outline-none text-sm lg:text-base ${
+                    open || moreLinks.some(link => isActivePath(link.href))
+                      ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300 shadow-md'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-primary-600 dark:hover:text-primary-400'
+                  }`}>
+                    <EllipsisHorizontalIcon className="w-4 h-4" />
+                    <span>More</span>
+                  </Menu.Button>
+
+                  <Transition
+                    show={open}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-1 scale-100"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-1 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Menu.Items 
+                      static
+                      className="absolute left-0 mt-2 w-44 lg:w-48 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down z-50"
+                    >
+                      {moreLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Menu.Item key={link.name}>
+                            {({ active, close }) => (
+                              <Link
+                                to={link.href}
+                                onClick={() => close()}
+                                className={`flex items-center space-x-3 px-4 py-3 text-sm transition-all duration-200 ${
+                                  isActivePath(link.href)
+                                    ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
+                                    : active
+                                    ? 'bg-gray-100 dark:bg-dark-700 text-primary-600 dark:text-primary-400'
+                                    : 'text-gray-700 dark:text-gray-300'
+                                }`}
+                              >
+                                <Icon className="w-4 h-4" />
+                                <span>{link.name}</span>
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu.Items>
+                  </Transition>
+                </>
+              )}
+            </Menu>
+
             {isAuthenticated && user?.role === 'owner' && (
               <>
                 {ownerLinks.map((link) => {
@@ -125,7 +174,7 @@ const Header = () => {
                     <Link
                       key={link.name}
                       to={link.href}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                      className={`flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 text-sm lg:text-base ${
                         isActivePath(link.href)
                           ? 'bg-gradient-to-r from-accent-100 to-warning-100 dark:from-accent-900 dark:to-warning-900 text-accent-700 dark:text-accent-300 shadow-md'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-accent-600 dark:hover:text-accent-400'
@@ -141,45 +190,28 @@ const Header = () => {
           </nav>
 
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full" ref={searchRef}>
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="w-full flex items-center space-x-3 px-4 py-2.5 bg-gray-100 dark:bg-dark-800 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <MagnifyingGlassIcon className="w-5 h-5" />
-                <span className="text-sm">Search PGs, locations...</span>
-              </button>
-
-              {showSearch && (
-                <div className="absolute top-full mt-2 w-full bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 p-4 animate-slide-down">
-                  <SearchAutocomplete onSearch={handleSearch} />
-                </div>
-              )}
-            </div>
+          <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm xl:max-w-md mx-2 lg:mx-4 xl:mx-6">
+            <SearchAutocomplete onSearch={handleSearch} />
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+              className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
             >
               {isDark ? (
-                <SunIcon className="w-5 h-5" />
+                <SunIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <MoonIcon className="w-5 h-5" />
+                <MoonIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </button>
 
             {/* Mobile Search */}
-            <button
-              onClick={() => setShowSearch(!showSearch)}
-              className="md:hidden p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
-            >
-              <MagnifyingGlassIcon className="w-5 h-5" />
-            </button>
+            <div className="md:hidden flex-1 max-w-[140px] sm:max-w-xs">
+              <SearchAutocomplete onSearch={handleSearch} />
+            </div>
 
             {isAuthenticated ? (
               <>
@@ -189,30 +221,30 @@ const Header = () => {
                 {/* Wishlist */}
                 <Link
                   to="/wishlist"
-                  className="relative p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+                  className="relative p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
                 >
-                  <HeartIcon className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center">
+                  <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center">
                     3
                   </span>
                 </Link>
 
                 {/* User Menu */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all duration-300">
-                    <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl flex items-center justify-center shadow-md">
+                  <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all duration-300">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md">
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
                           alt={user.name}
-                          className="w-full h-full rounded-xl object-cover"
+                          className="w-full h-full rounded-lg sm:rounded-xl object-cover"
                         />
                       ) : (
-                        <UserIcon className="w-5 h-5 text-white" />
+                        <UserIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       )}
                     </div>
                     <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[100px] lg:max-w-none">
                         {user?.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
@@ -229,7 +261,7 @@ const Header = () => {
                     leaveFrom="opacity-1 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 mt-2 w-64 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down">
+                    <Menu.Items className="absolute right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down z-50">
                       <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-600">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user?.name}
@@ -311,16 +343,16 @@ const Header = () => {
                 </Menu>
               </>
             ) : (
-              <div className="hidden sm:flex items-center space-x-3">
+              <div className="hidden xs:flex sm:flex items-center space-x-2 sm:space-x-3">
                 <Link
                   to="/login"
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-ghost btn-sm text-xs sm:text-sm"
                 >
                   Sign in
                 </Link>
                 <Link
                   to="/register"
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary btn-sm text-xs sm:text-sm"
                 >
                   Get Started
                 </Link>
@@ -330,12 +362,12 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+              className="lg:hidden p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
             >
               {isOpen ? (
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <Bars3Icon className="w-5 h-5" />
+                <Bars3Icon className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </button>
           </div>
@@ -360,7 +392,27 @@ const Header = () => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] ${
+                      isActivePath(link.href)
+                        ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{link.name}</span>
+                  </Link>
+                );
+              })}
+
+              {/* More Links in Mobile */}
+              {moreLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] ${
                       isActivePath(link.href)
                         ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800'
@@ -381,7 +433,7 @@ const Header = () => {
                         key={link.name}
                         to={link.href}
                         onClick={() => setIsOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] ${
                           isActivePath(link.href)
                             ? 'bg-gradient-to-r from-accent-100 to-warning-100 dark:from-accent-900 dark:to-warning-900 text-accent-700 dark:text-accent-300'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800'
@@ -400,14 +452,14 @@ const Header = () => {
                   <Link
                     to="/login"
                     onClick={() => setIsOpen(false)}
-                    className="btn btn-ghost"
+                    className="btn btn-ghost hover:!scale-[1.02]"
                   >
                     Sign in
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setIsOpen(false)}
-                    className="btn btn-primary"
+                    className="btn btn-primary hover:!scale-[1.02]"
                   >
                     Get Started
                   </Link>
@@ -416,15 +468,6 @@ const Header = () => {
             </div>
           </div>
         </Transition>
-
-        {/* Mobile Search */}
-        {showSearch && (
-          <div className="md:hidden pb-4 border-t border-gray-200 dark:border-dark-700 mt-4">
-            <div className="pt-4">
-              <SearchAutocomplete onSearch={handleSearch} />
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );

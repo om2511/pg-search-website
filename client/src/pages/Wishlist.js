@@ -31,38 +31,8 @@ const Wishlist = () => {
 
   const fetchWishlistPGs = async () => {
     try {
-      // If user is authenticated, wishlist contains full PG objects
-      // If not authenticated, wishlist contains only IDs, need to fetch details
-      if (isAuthenticated) {
-        setWishlistPGs(wishlist);
-      } else {
-        // For demo purposes, use mock data
-        const mockWishlistPGs = [
-          {
-            _id: '1',
-            name: 'Sunshine Residency',
-            location: { city: 'Mumbai', state: 'Maharashtra' },
-            price: 15000,
-            gender: 'both',
-            amenities: ['wifi', 'ac', 'meals', 'security'],
-            availableRooms: 3,
-            images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-            addedToWishlist: new Date()
-          },
-          {
-            _id: '2',
-            name: 'Green Valley PG',
-            location: { city: 'Bangalore', state: 'Karnataka' },
-            price: 12000,
-            gender: 'girls',
-            amenities: ['wifi', 'tv', 'fridge', 'cleaning'],
-            availableRooms: 2,
-            images: ['https://images.unsplash.com/photo-1540518614846-7eded47c0419?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-            addedToWishlist: new Date(Date.now() - 86400000) // 1 day ago
-          }
-        ];
-        setWishlistPGs(mockWishlistPGs.filter(pg => wishlist.includes(pg._id)));
-      }
+      // For authenticated users, wishlist contains full PG objects from API
+      setWishlistPGs(wishlist);
     } catch (error) {
       console.error('Error fetching wishlist PGs:', error);
     } finally {
@@ -128,7 +98,7 @@ const Wishlist = () => {
         break;
       case 'newest':
       default:
-        filtered.sort((a, b) => new Date(b.addedToWishlist) - new Date(a.addedToWishlist));
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
     }
 

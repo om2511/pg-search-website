@@ -75,7 +75,7 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
     return (
       <Link 
         to={`/pg/${pg._id}`} 
-        className="block bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group overflow-hidden"
+        className="block bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.01] group overflow-hidden"
       >
         <div className="flex flex-col md:flex-row">
           {/* Image Section */}
@@ -202,7 +202,7 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
   return (
     <Link 
       to={`/pg/${pg._id}`} 
-      className="block bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 group overflow-hidden"
+      className="block bg-white dark:bg-dark-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.01] hover:-translate-y-1 group overflow-hidden"
     >
       {/* Image Section */}
       <div className="relative h-48 overflow-hidden">

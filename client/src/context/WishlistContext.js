@@ -26,11 +26,8 @@ export const WishlistProvider = ({ children }) => {
     
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/user/wishlist', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setWishlist(response.data.data || []);
+      const response = await axios.get('/api/auth/wishlist');
+      setWishlist(response.data.data.pgs || []);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
     } finally {
@@ -45,10 +42,7 @@ export const WishlistProvider = ({ children }) => {
 
     if (isAuthenticated) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.post('/api/user/wishlist', { pgId }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`/api/auth/wishlist/${pgId}`);
         await fetchWishlist(); // Refresh wishlist
       } catch (error) {
         console.error('Error adding to wishlist:', error);
@@ -64,10 +58,7 @@ export const WishlistProvider = ({ children }) => {
   const removeFromWishlist = async (pgId) => {
     if (isAuthenticated) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/user/wishlist/${pgId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`/api/auth/wishlist/${pgId}`);
         await fetchWishlist(); // Refresh wishlist
       } catch (error) {
         console.error('Error removing from wishlist:', error);

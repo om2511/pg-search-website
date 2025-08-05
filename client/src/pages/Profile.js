@@ -16,7 +16,9 @@ import {
   HeartIcon,
   CogIcon,
   KeyIcon,
-  BellIcon
+  BellIcon,
+  TrashIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
 
@@ -49,6 +51,9 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: ''
   });
+
+  const [userPGs, setUserPGs] = useState([]);
+  const [pgsLoading, setPgsLoading] = useState(false);
 
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
@@ -184,8 +189,44 @@ const Profile = () => {
     }
   };
 
+  const fetchUserPGs = async () => {
+    if (user?.role !== 'owner') return;
+    
+    setPgsLoading(true);
+    try {
+      const response = await axios.get('/api/pgs/my-pgs');
+      setUserPGs(response.data.data.pgs || []);
+    } catch (error) {
+      console.error('Error fetching user PGs:', error);
+      showError('Error loading your PG listings');
+    } finally {
+      setPgsLoading(false);
+    }
+  };
+
+  const handleDeletePG = async (pgId) => {
+    if (!window.confirm('Are you sure you want to delete this PG listing?')) return;
+    
+    try {
+      await axios.delete(`/api/pgs/${pgId}`);
+      setUserPGs(prevPGs => prevPGs.filter(pg => pg._id !== pgId));
+      showSuccess('PG listing deleted successfully');
+    } catch (error) {
+      console.error('Error deleting PG:', error);
+      showError('Error deleting PG listing');
+    }
+  };
+
+  // Fetch user PGs when switching to my-pgs tab
+  useEffect(() => {
+    if (activeTab === 'my-pgs' && user?.role === 'owner') {
+      fetchUserPGs();
+    }
+  }, [activeTab, user]);
+
   const tabs = [
     { id: 'profile', name: 'Profile', icon: UserIcon },
+    ...(user?.role === 'owner' ? [{ id: 'my-pgs', name: 'My PGs', icon: BuildingOfficeIcon }] : []),
     { id: 'preferences', name: 'Preferences', icon: CogIcon },
     { id: 'security', name: 'Security', icon: KeyIcon },
     { id: 'notifications', name: 'Notifications', icon: BellIcon }
@@ -550,6 +591,127 @@ const Profile = () => {
                     </button>
                   </div>
                 </form>
+              )}
+
+              {/* My PGs Tab */}
+              {activeTab === 'my-pgs' && user?.role === 'owner' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      My PG Listings
+                    </h3>
+                    <Link
+                      to="/add-pg"
+                      className="btn btn-primary flex items-center space-x-2"
+                    >
+                      <BuildingOfficeIcon className="w-5 h-5" />
+                      <span>Add New PG</span>
+                    </Link>
+                  </div>
+
+                  {pgsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                      <p className="text-gray-600 dark:text-gray-400">Loading your PG listings...</p>
+                    </div>
+                  ) : userPGs.length === 0 ? (
+                    <div className="text-center py-12">
+                      <BuildingOfficeIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        No PG Listings Yet
+                      </h4>
+                      <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        Start by adding your first PG property to attract potential tenants.
+                      </p>
+                      <Link to="/add-pg" className="btn btn-primary">
+                        Add Your First PG
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {userPGs.map((pg) => (
+                        <div
+                          key={pg._id}
+                          className="card p-6 hover:shadow-lg transition-shadow"
+                        >
+                          {/* PG Image */}
+                          <div className="aspect-video bg-gray-200 dark:bg-dark-700 rounded-lg mb-4 overflow-hidden">
+                            {pg.images && pg.images.length > 0 ? (
+                              <img
+                                src={pg.images[0]}
+                                alt={pg.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <BuildingOfficeIcon className="w-12 h-12 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* PG Details */}
+                          <div className="space-y-3">
+                            <div>
+                              <h4 className="font-semibold text-gray-900 dark:text-white">
+                                {pg.name}
+                              </h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                                <MapPinIcon className="w-4 h-4 mr-1" />
+                                {pg.location?.city}, {pg.location?.state}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="font-medium text-primary-600">
+                                ₹{pg.price?.toLocaleString()}/month
+                              </span>
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {pg.availableRooms}/{pg.totalRooms} available
+                              </span>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                pg.availability
+                                  ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                  : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                              }`}>
+                                {pg.availability ? 'Available' : 'Not Available'}
+                              </span>
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-dark-700 text-gray-800 dark:text-gray-200">
+                                {pg.gender}
+                              </span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex space-x-2 pt-2">
+                              <Link
+                                to={`/pg/${pg._id}`}
+                                className="flex-1 btn btn-outline btn-sm"
+                              >
+                                <EyeIcon className="w-4 h-4 mr-1" />
+                                View
+                              </Link>
+                              <Link
+                                to={`/edit-pg/${pg._id}`}
+                                className="flex-1 btn btn-primary btn-sm"
+                              >
+                                <PencilIcon className="w-4 h-4 mr-1" />
+                                Edit
+                              </Link>
+                              <button
+                                onClick={() => handleDeletePG(pg._id)}
+                                className="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Notifications Tab */}

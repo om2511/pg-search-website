@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import PGCard from '../components/common/PGCard';
+import GoogleMaps from '../components/common/GoogleMaps';
 import axios from 'axios';
 import {
   MapPinIcon,
@@ -397,18 +398,13 @@ const PGDetails = () => {
               </h2>
               
               {/* Google Map */}
-              <div className="bg-gray-200 dark:bg-dark-700 rounded-2xl h-80 mb-6 overflow-hidden">
-                <iframe
-                  src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodeURIComponent(pg.location?.address + ', ' + pg.location?.city)}`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="PG Location Map"
-                ></iframe>
-              </div>
+              <GoogleMaps 
+                location={pg.location}
+                pgName={pg.name}
+                className="w-full h-80 mb-6"
+                showDirections={true}
+                zoom={16}
+              />
 
               {/* Nearby Places */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

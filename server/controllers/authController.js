@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const PG = require('../models/PG');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (id) => {
@@ -74,4 +75,114 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+// Wishlist Management
+const addToWishlist = async (req, res) => {
+  try {
+    const { pgId } = req.params;
+    const userId = req.user._id;
+    
+    // Check if PG exists
+    const pg = await PG.findById(pgId);
+    if (!pg) {
+      return res.status(404).json({ message: 'PG not found' });
+    }
+    
+    // Check if already in wishlist
+    const user = await User.findById(userId);
+    if (user.wishlist.includes(pgId)) {
+      return res.status(400).json({ message: 'PG already in wishlist' });
+    }
+    
+    // Add to wishlist
+    user.wishlist.push(pgId);
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'PG added to wishlist',
+      data: { wishlistCount: user.wishlist.length }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const removeFromWishlist = async (req, res) => {
+  try {
+    const { pgId } = req.params;
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    user.wishlist = user.wishlist.filter(id => id.toString() !== pgId);
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'PG removed from wishlist',
+      data: { wishlistCount: user.wishlist.length }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getWishlist = async (req, res) => {
+  try {
+    const { page = 1, limit = 12 } = req.query;
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId).populate({
+      path: 'wishlist',
+      populate: {
+        path: 'owner',
+        select: 'name phone email'
+      },
+      options: {
+        limit: parseInt(limit),
+        skip: (parseInt(page) - 1) * parseInt(limit)
+      }
+    });
+    
+    const total = user.wishlist.length;
+    
+    res.json({
+      success: true,
+      data: {
+        pgs: user.wishlist,
+        total,
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit),
+        hasMore: page * limit < total
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const checkWishlistStatus = async (req, res) => {
+  try {
+    const { pgId } = req.params;
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    const isWishlisted = user.wishlist.includes(pgId);
+    
+    res.json({
+      success: true,
+      data: { isWishlisted }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { 
+  register, 
+  login, 
+  getProfile, 
+  addToWishlist, 
+  removeFromWishlist, 
+  getWishlist, 
+  checkWishlistStatus 
+};

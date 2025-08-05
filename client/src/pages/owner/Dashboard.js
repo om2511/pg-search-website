@@ -58,7 +58,7 @@ const OwnerDashboard = () => {
       const token = localStorage.getItem('token');
       const [statsRes, pgsRes, inquiriesRes] = await Promise.all([
         axios.get('/api/owner/stats', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('/api/owner/pgs', { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get('/api/pgs/my-pgs'),
         axios.get('/api/owner/inquiries', { headers: { Authorization: `Bearer ${token}` } })
       ]);
 

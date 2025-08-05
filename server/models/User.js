@@ -30,7 +30,11 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: ''
-  }
+  },
+  wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PG'
+  }]
 }, {
   timestamps: true
 });
