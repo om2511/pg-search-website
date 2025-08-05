@@ -1,0 +1,500 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+  BuildingOfficeIcon,
+  UserIcon,
+  PhoneIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  ShieldCheckIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
+
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    role: 'user',
+    agreeToTerms: false
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  
+  const { register, isAuthenticated } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    // Calculate password strength
+    const calculateStrength = (password) => {
+      let strength = 0;
+      if (password.length >= 8) strength += 25;
+      if (/[a-z]/.test(password)) strength += 25;
+      if (/[A-Z]/.test(password)) strength += 25;
+      if (/[0-9]/.test(password)) strength += 25;
+      return strength;
+    };
+    
+    setPasswordStrength(calculateStrength(formData.password));
+  }, [formData.password]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Full name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    }
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.phone) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+      newErrors.phone = 'Phone number must be 10 digits';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setLoading(true);
+
+    const result = await register(formData);
+    
+    if (result.success) {
+      showSuccess('Account created!', `Welcome to FindMyPG, ${formData.name}!`);
+      navigate('/', { replace: true });
+    } else {
+      showError('Registration failed', result.error);
+    }
+    
+    setLoading(false);
+  };
+
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength < 50) return 'bg-error-500';
+    if (passwordStrength < 75) return 'bg-warning-500';
+    return 'bg-success-500';
+  };
+
+  const getPasswordStrengthText = () => {
+    if (passwordStrength < 25) return 'Very Weak';
+    if (passwordStrength < 50) return 'Weak';
+    if (passwordStrength < 75) return 'Good';
+    return 'Strong';
+  };
+
+  const benefits = [
+    'Save your favorite PGs',
+    'Get instant notifications',
+    'Direct contact with owners',
+    'No brokerage fees',
+    'Verified properties only'
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-dark-900 dark:via-dark-800 dark:to-dark-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-hero-pattern opacity-5"></div>
+      
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-lg">
+        {/* Logo & Header */}
+        <div className="text-center animate-fade-in">
+          <Link to="/" className="inline-flex items-center space-x-3 mb-6 group">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-110">
+              <BuildingOfficeIcon className="w-8 h-8 text-white" />
+            </div>
+            <div className="text-left">
+              <h1 className="text-2xl font-display font-bold text-gradient">
+                FindMyPG
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Premium Living Spaces
+              </p>
+            </div>
+          </Link>
+          
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Join FindMyPG Today
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            Create your account and discover amazing PG accommodations
+          </p>
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="card p-8 animate-slide-up animate-delay-200">
+          {/* Benefits */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-xl border border-primary-200 dark:border-primary-800">
+            <div className="flex items-center space-x-2 mb-3">
+              <SparklesIcon className="w-5 h-5 text-primary-600" />
+              <h4 className="text-sm font-semibold text-primary-800 dark:text-primary-200">
+                What you get with FindMyPG:
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="flex items-center space-x-2 text-sm text-primary-700 dark:text-primary-300">
+                  <CheckCircleIcon className="w-4 h-4 text-success-500" />
+                  <span>{benefit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Full Name
+              </label>
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  className={`input pl-12 ${errors.name ? 'input-error' : ''}`}
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
+              {errors.name && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.name}</p>
+              )}
+            </div>
+
+            {/* Email Field */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className={`input pl-12 ${errors.email ? 'input-error' : ''}`}
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Phone Field */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Phone Number
+              </label>
+              <div className="relative">
+                <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  className={`input pl-12 ${errors.phone ? 'input-error' : ''}`}
+                  placeholder="Enter your phone number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+              {errors.phone && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.phone}</p>
+              )}
+            </div>
+
+            {/* Role Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Account Type
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                  formData.role === 'user' 
+                    ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' 
+                    : 'border-gray-300 dark:border-dark-600 hover:border-gray-400 dark:hover:border-dark-500'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="user"
+                    checked={formData.role === 'user'}
+                    onChange={handleChange}
+                    className="sr-only"
+                  />
+                  <div className="text-center w-full">
+                    <UserIcon className="w-8 h-8 mx-auto mb-2 text-primary-600" />
+                    <div className="font-medium text-gray-900 dark:text-white">Looking for PG</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Find your perfect home</div>
+                  </div>
+                </label>
+
+                <label className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                  formData.role === 'owner' 
+                    ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' 
+                    : 'border-gray-300 dark:border-dark-600 hover:border-gray-400 dark:hover:border-dark-500'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="owner"
+                    checked={formData.role === 'owner'}
+                    onChange={handleChange}
+                    className="sr-only"
+                  />
+                  <div className="text-center w-full">
+                    <BuildingOfficeIcon className="w-8 h-8 mx-auto mb-2 text-primary-600" />
+                    <div className="font-medium text-gray-900 dark:text-white">PG Owner</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">List your property</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  required
+                  className={`input pl-12 pr-12 ${errors.password ? 'input-error' : ''}`}
+                  placeholder="Create a strong password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="w-5 h-5" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              
+              {/* Password Strength Indicator */}
+              {formData.password && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Password Strength</span>
+                    <span className={`text-xs font-medium ${
+                      passwordStrength < 50 ? 'text-error-600' : 
+                      passwordStrength < 75 ? 'text-warning-600' : 
+                      'text-success-600'
+                    }`}>
+                      {getPasswordStrengthText()}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-dark-600 rounded-full h-1.5">
+                    <div 
+                      className={`h-1.5 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
+                      style={{ width: `${passwordStrength}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+              
+              {errors.password && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  required
+                  className={`input pl-12 pr-12 ${errors.confirmPassword ? 'input-error' : ''}`}
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon className="w-5 h-5" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.confirmPassword}</p>
+              )}
+            </div>
+
+            {/* Terms & Conditions */}
+            <div>
+              <label className="flex items-start space-x-3 cursor-pointer">
+                <input
+                  name="agreeToTerms"
+                  type="checkbox"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                  className={`mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500 ${
+                    errors.agreeToTerms ? 'border-error-500' : ''
+                  }`}
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  I agree to the{' '}
+                  <Link to="/terms" className="text-primary-600 dark:text-primary-400 hover:underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" className="text-primary-600 dark:text-primary-400 hover:underline">
+                    Privacy Policy
+                  </Link>
+                </span>
+              </label>
+              {errors.agreeToTerms && (
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{errors.agreeToTerms}</p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn btn-primary w-full btn-lg group"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Creating account...
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <SparklesIcon className="w-5 h-5 mr-2" />
+                    Create Account
+                    <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-dark-600"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-dark-800 text-gray-500">Already have an account?</span>
+              </div>
+            </div>
+
+            {/* Login Link */}
+            <div className="text-center">
+              <Link
+                to="/login"
+                className="btn btn-outline w-full"
+              >
+                Sign In Instead
+              </Link>
+            </div>
+          </form>
+
+          {/* Security Note */}
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-dark-700 rounded-xl">
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <ShieldCheckIcon className="w-4 h-4 text-success-500" />
+              <span>Your data is protected with enterprise-grade security</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
