@@ -13,8 +13,8 @@ import {
   CalendarIcon,
   PhoneIcon,
   StarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -232,9 +232,9 @@ const OwnerDashboard = () => {
                     stat.trend === 'up' ? 'text-success-600' : 'text-error-600'
                   }`}>
                     {stat.trend === 'up' ? (
-                      <TrendingUpIcon className="w-4 h-4 mr-1" />
+                      <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
                     ) : (
-                      <TrendingDownIcon className="w-4 h-4 mr-1" />
+                      <ArrowTrendingDownIcon className="w-4 h-4 mr-1" />
                     )}
                     {stat.change}
                   </div>

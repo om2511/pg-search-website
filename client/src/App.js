@@ -12,6 +12,12 @@ import PGDetails from './pages/PGDetails';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import AddPG from './pages/AddPG';
+import Profile from './pages/Profile';
+import Wishlist from './pages/Wishlist';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Settings from './pages/Settings';
+import OwnerDashboard from './pages/owner/Dashboard';
 import axios from 'axios';
 
 // Set base URL for API calls
@@ -24,9 +30,9 @@ function App() {
         <WishlistProvider>
           <ToastProvider>
             <Router>
-              <div className="min-h-screen bg-gray-50">
+              <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50/30 to-secondary-50/20 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800 transition-colors duration-300">
                 <Header />
-                <main>
+                <main className="relative">
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/listings" element={<Listings />} />
@@ -34,6 +40,12 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/add-pg" element={<AddPG />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/owner/dashboard" element={<OwnerDashboard />} />
                   </Routes>
                 </main>
                 <Footer />

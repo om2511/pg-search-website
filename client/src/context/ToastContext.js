@@ -48,6 +48,10 @@ export const ToastProvider = ({ children }) => {
     return addToast('info', title, message, duration);
   }, [addToast]);
 
+  const showToast = useCallback((message, type = 'info', duration) => {
+    return addToast(type, '', message, duration);
+  }, [addToast]);
+
   const clearAllToasts = useCallback(() => {
     setToasts([]);
   }, []);
@@ -60,6 +64,7 @@ export const ToastProvider = ({ children }) => {
     showError,
     showWarning,
     showInfo,
+    showToast,
     clearAllToasts
   };
 

@@ -312,4 +312,4 @@ const Wishlist = () => {
   );
 };
 
-export { AddPG as default, Wishlist };
+export default Wishlist;
