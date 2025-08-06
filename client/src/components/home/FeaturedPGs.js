@@ -15,7 +15,7 @@ const FeaturedPGs = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [filter, setFilter] = useState('all');
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     fetchFeaturedPGs();
@@ -23,7 +23,7 @@ const FeaturedPGs = () => {
 
   const fetchFeaturedPGs = async () => {
     try {
-      const response = await axios.get('/api/pgs?limit=12&featured=true');
+      const response = await axios.get('/api/pgs?limit=3&featured=true');
       setPgs(response.data.data.pgs || []);
     } catch (error) {
       console.error('Error fetching PGs:', error);
@@ -47,11 +47,8 @@ const FeaturedPGs = () => {
     });
   };
 
-  const filteredPGs = filterPGs().slice(0, visibleCount);
+  const filteredPGs = filterPGs().slice(0, 3);
 
-  const loadMore = () => {
-    setVisibleCount(prev => prev + 6);
-  };
 
   if (loading) {
     return (
@@ -62,7 +59,7 @@ const FeaturedPGs = () => {
             <div className="h-3 sm:h-4 bg-gray-300 dark:bg-dark-600 rounded w-72 sm:w-96 mx-auto animate-pulse"></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {[...Array(6)].map((_, index) => (
+            {[...Array(3)].map((_, index) => (
               <PGCardSkeleton key={index} />
             ))}
           </div>
@@ -145,7 +142,7 @@ const FeaturedPGs = () => {
           </div>
         </div>
 
-        {/* PG Grid/List */}
+        {/* PG Grid/List - Always show 3 cards in a single row */}
         <div className={`${
           viewMode === 'grid' 
             ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8' 
@@ -162,23 +159,13 @@ const FeaturedPGs = () => {
           ))}
         </div>
 
-        {/* Load More / View All */}
+        {/* View All Button */}
         <div className="text-center px-4 sm:px-0">
-          {visibleCount < filterPGs().length ? (
-            <button
-              onClick={loadMore}
-              className="btn btn-outline btn-lg mb-4 sm:mb-6 transform hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto"
-            >
-              Load More Properties
-              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-            </button>
-          ) : null}
-          
           <Link
             to="/listings"
             className="btn btn-primary btn-lg sm:btn-xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto"
           >
-            View All {pgs.length}+ Properties
+            View All Properties
             <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
           </Link>
         </div>

@@ -68,7 +68,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-b border-gray-200 dark:border-dark-700 shadow-lg">
       <div className="container-responsive">
-        <div className="flex justify-between items-center py-3 sm:py-4 gap-2 sm:gap-4 lg:gap-8">
+        <div className="flex justify-between items-center py-2 md:py-3 lg:py-4 gap-2 sm:gap-4 lg:gap-8">
           {/* Logo Section */}
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group flex-shrink-0">
             <div className="relative">
@@ -191,27 +191,31 @@ const Header = () => {
 
           {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm xl:max-w-md mx-2 lg:mx-4 xl:mx-6">
-            <SearchAutocomplete onSearch={handleSearch} />
+            <div className="w-full [&>*]:!py-1 lg:[&>*]:!py-2.5">
+              <SearchAutocomplete onSearch={handleSearch} />
+            </div>
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
+          <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-3">
+            {/* Mobile Search - Centered */}
+            <div className="md:hidden flex-1 max-w-[160px] sm:max-w-[200px] mx-auto">
+              <div className="w-full [&>*]:!py-1 [&>*]:!text-sm">
+                <SearchAutocomplete onSearch={handleSearch} />
+              </div>
+            </div>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+              className="p-2 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
             >
               {isDark ? (
-                <SunIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <SunIcon className="w-5 h-5 sm:w-5 sm:h-5" />
               ) : (
-                <MoonIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <MoonIcon className="w-5 h-5 sm:w-5 sm:h-5" />
               )}
             </button>
-
-            {/* Mobile Search */}
-            <div className="md:hidden flex-1 max-w-[140px] sm:max-w-xs">
-              <SearchAutocomplete onSearch={handleSearch} />
-            </div>
 
             {isAuthenticated ? (
               <>
@@ -221,7 +225,7 @@ const Header = () => {
                 {/* Wishlist */}
                 <Link
                   to="/wishlist"
-                  className="relative p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+                  className="relative p-1.5 md:p-2 lg:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
                 >
                   <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -231,8 +235,8 @@ const Header = () => {
 
                 {/* User Menu */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all duration-300">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md">
+                  <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-1 md:p-1.5 lg:p-2 rounded-lg sm:rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all duration-300">
+                    <div className="w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md">
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
@@ -343,7 +347,7 @@ const Header = () => {
                 </Menu>
               </>
             ) : (
-              <div className="hidden xs:flex sm:flex items-center space-x-2 sm:space-x-3">
+              <div className="hidden lg:flex items-center space-x-2 sm:space-x-3">
                 <Link
                   to="/login"
                   className="btn btn-ghost btn-sm text-xs sm:text-sm"
@@ -362,12 +366,12 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+              className="lg:hidden p-2 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
             >
               {isOpen ? (
-                <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <XMarkIcon className="w-5 h-5 sm:w-5 sm:h-5" />
               ) : (
-                <Bars3Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Bars3Icon className="w-5 h-5 sm:w-5 sm:h-5" />
               )}
             </button>
           </div>

@@ -113,7 +113,7 @@ const GoogleMaps = ({
         <div className="w-full h-full relative">
           <iframe
             ref={mapRef}
-            src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dOMD0C2EnNahnA&q=${encodeURIComponent(address)}&zoom=${zoom}`}
+            src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed&z=${zoom}`}
             className="w-full h-full border-0"
             allowFullScreen=""
             loading="lazy"

@@ -68,18 +68,22 @@ const PGDetails = () => {
   const fetchReviews = async () => {
     try {
       const response = await axios.get(`/api/pgs/${id}/reviews`);
-      setReviews(response.data.data || []);
+      // Extract the reviews array from the response data
+      const reviewsData = response.data.data || {};
+      setReviews(Array.isArray(reviewsData.reviews) ? reviewsData.reviews : []);
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      setReviews([]); // Ensure reviews is always an array
     }
   };
 
   const fetchSimilarPGs = async () => {
     try {
       const response = await axios.get(`/api/pgs/similar/${id}`);
-      setSimilarPGs(response.data.data || []);
+      setSimilarPGs(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       console.error('Error fetching similar PGs:', error);
+      setSimilarPGs([]); // Ensure similarPGs is always an array
     }
   };
 
@@ -183,7 +187,7 @@ const PGDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
       {/* Hero Image Section */}
-      <div className="relative h-96 lg:h-[500px] overflow-hidden">
+      <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] overflow-hidden">
         <img
           src={pg.images?.[currentImageIndex] || '/api/placeholder/1200/500'}
           alt={pg.name}
@@ -193,35 +197,35 @@ const PGDetails = () => {
         {/* Overlay Controls */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20">
           {/* Top Controls */}
-          <div className="absolute top-6 left-6 right-6 flex justify-between items-center">
+          <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex justify-between items-center">
             <button
               onClick={() => navigate(-1)}
-              className="p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+              className="p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
             >
-              <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
             </button>
 
-            <div className="flex space-x-3">
+            <div className="flex space-x-2 sm:space-x-3">
               <button
                 onClick={handleShare}
-                className="p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                className="p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
               >
-                <ShareIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                <ShareIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
               </button>
               
               <button
                 onClick={handleWishlistToggle}
-                className="p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                className="p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
               >
                 {isInWishlist(pg._id) ? (
-                  <HeartSolidIcon className="w-6 h-6 text-red-500" />
+                  <HeartSolidIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
                 ) : (
-                  <HeartIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                  <HeartIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
                 )}
               </button>
 
-              <button className="p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                <FlagIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              <button className="p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
+                <FlagIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
               </button>
             </div>
           </div>
@@ -231,21 +235,21 @@ const PGDetails = () => {
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-6 top-1/2 transform -translate-y-1/2 p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                className="absolute left-2 sm:left-6 top-1/2 transform -translate-y-1/2 p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <ChevronLeftIcon className="w-6 h-6" />
+                <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               
               <button
                 onClick={nextImage}
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 p-3 bg-white/90 dark:bg-dark-800/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                className="absolute right-2 sm:right-6 top-1/2 transform -translate-y-1/2 p-2 sm:p-3 bg-white/90 dark:bg-dark-800/90 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <ChevronRightIcon className="w-6 h-6" />
+                <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               {/* Image Counter */}
-              <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-xl">
-                <span className="text-sm font-medium">
+              <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-black/50 backdrop-blur-sm text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl">
+                <span className="text-xs sm:text-sm font-medium">
                   {currentImageIndex + 1} / {pg.images.length}
                 </span>
               </div>
@@ -255,116 +259,119 @@ const PGDetails = () => {
           {/* View All Photos Button */}
           <button
             onClick={() => setShowImageModal(true)}
-            className="absolute bottom-6 right-6 flex items-center space-x-2 bg-white/90 dark:bg-dark-800/90 px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-center space-x-1 sm:space-x-2 bg-white/90 dark:bg-dark-800/90 px-3 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <PhotoIcon className="w-5 h-5" />
-            <span className="font-medium">View All Photos</span>
+            <PhotoIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base font-medium hidden xs:inline">View All Photos</span>
+            <span className="text-sm font-medium xs:hidden">Photos</span>
           </button>
         </div>
       </div>
 
-      <div className="container-responsive py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container-responsive py-4 sm:py-6 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Basic Info */}
-            <div className="card p-8 animate-fade-in">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
+            <div className="card p-4 sm:p-6 lg:p-8 animate-fade-in">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 sm:mb-6">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-3">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-0">
                       {pg.name}
                     </h1>
-                    <div className="badge badge-primary">
+                    <div className="badge badge-primary w-fit">
                       {pg.gender === 'both' ? 'Co-ed' : pg.gender.charAt(0).toUpperCase() + pg.gender.slice(1)}
                     </div>
                   </div>
                   
-                  <div className="flex items-center text-gray-600 dark:text-gray-400 mb-4">
-                    <MapPinIcon className="w-5 h-5 mr-2" />
-                    <span className="text-lg">{pg.location?.address}, {pg.location?.city}, {pg.location?.state} - {pg.location?.pincode}</span>
+                  <div className="flex items-start sm:items-center text-gray-600 dark:text-gray-400 mb-4">
+                    <MapPinIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 mt-0.5 sm:mt-0" />
+                    <span className="text-sm sm:text-base lg:text-lg leading-relaxed">{pg.location?.address}, {pg.location?.city}, {pg.location?.state} - {pg.location?.pincode}</span>
                   </div>
 
                   {/* Rating */}
-                  <div className="flex items-center space-x-4 mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mb-4 sm:mb-6">
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
                         <StarIcon 
                           key={i} 
-                          className={`w-5 h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                          className={`w-4 h-4 sm:w-5 sm:h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
-                    <span className="text-gray-600 dark:text-gray-400">4.2 (128 reviews)</span>
-                    <span className="text-gray-400">•</span>
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                      <EyeIcon className="w-4 h-4 mr-1" />
-                      <span>1,245 views</span>
+                    <div className="flex items-center space-x-2 sm:space-x-4">
+                      <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">4.2 (128 reviews)</span>
+                      <span className="text-gray-400 hidden sm:inline">•</span>
+                      <div className="flex items-center text-gray-600 dark:text-gray-400">
+                        <EyeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                        <span className="text-sm sm:text-base">1,245 views</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="lg:text-right">
-                  <div className="flex items-center justify-center lg:justify-end text-primary-600 dark:text-primary-400 font-bold text-3xl lg:text-4xl mb-2">
-                    <CurrencyRupeeIcon className="w-8 h-8" />
+                <div className="lg:text-right mt-4 lg:mt-0">
+                  <div className="flex items-center justify-center lg:justify-end text-primary-600 dark:text-primary-400 font-bold text-2xl sm:text-3xl lg:text-4xl mb-1 sm:mb-2">
+                    <CurrencyRupeeIcon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
                     <span>{pg.price?.toLocaleString()}</span>
                   </div>
-                  <span className="text-gray-500 text-lg">per month</span>
-                  <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-500 text-base sm:text-lg block text-center lg:text-right">per month</span>
+                  <div className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center lg:text-right">
                     + ₹2,000 security deposit
                   </div>
                 </div>
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-gray-50 dark:bg-dark-700 rounded-2xl">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 bg-gray-50 dark:bg-dark-700 rounded-xl sm:rounded-2xl">
                 <div className="text-center">
-                  <HomeIcon className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Rooms</div>
-                  <div className="font-bold text-lg text-gray-900 dark:text-white">{pg.totalRooms}</div>
+                  <HomeIcon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-gray-400 mb-1 sm:mb-2" />
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Rooms</div>
+                  <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">{pg.totalRooms}</div>
                 </div>
                 <div className="text-center">
-                  <UserGroupIcon className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Available</div>
-                  <div className="font-bold text-lg text-gray-900 dark:text-white">{pg.availableRooms} rooms</div>
+                  <UserGroupIcon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-gray-400 mb-1 sm:mb-2" />
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Available</div>
+                  <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">{pg.availableRooms} rooms</div>
                 </div>
                 <div className="text-center">
-                  <CalendarIcon className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Min Stay</div>
-                  <div className="font-bold text-lg text-gray-900 dark:text-white">3 months</div>
+                  <CalendarIcon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-gray-400 mb-1 sm:mb-2" />
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Min Stay</div>
+                  <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">3 months</div>
                 </div>
                 <div className="text-center">
-                  <ClockIcon className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Available From</div>
-                  <div className="font-bold text-lg text-gray-900 dark:text-white">Immediate</div>
+                  <ClockIcon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-gray-400 mb-1 sm:mb-2" />
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Available From</div>
+                  <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">Immediate</div>
                 </div>
               </div>
             </div>
 
             {/* Description */}
-            <div className="card p-8 animate-slide-up animate-delay-200">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-                <HomeIcon className="w-6 h-6 mr-2 text-primary-600" />
+            <div className="card p-4 sm:p-6 lg:p-8 animate-slide-up animate-delay-200">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+                <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-primary-600" />
                 About This PG
               </h2>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg">
                 {pg.description}
               </p>
             </div>
 
             {/* Amenities */}
-            <div className="card p-8 animate-slide-up animate-delay-300">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-                <CheckCircleIcon className="w-6 h-6 mr-2 text-success-600" />
+            <div className="card p-4 sm:p-6 lg:p-8 animate-slide-up animate-delay-300">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+                <CheckCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-success-600" />
                 Amenities & Facilities
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {pg.amenities?.map((amenity, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-dark-700 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-600 transition-colors">
-                    <div className="w-10 h-10 bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 rounded-xl flex items-center justify-center">
+                  <div key={index} className="flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gray-50 dark:bg-dark-700 rounded-lg sm:rounded-xl hover:bg-gray-100 dark:hover:bg-dark-600 transition-colors">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
                       {getAmenityIcon(amenity)}
                     </div>
-                    <span className="text-gray-700 dark:text-gray-300 font-medium">
+                    <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium leading-tight">
                       {formatAmenityName(amenity)}
                     </span>
                   </div>
@@ -373,14 +380,14 @@ const PGDetails = () => {
             </div>
 
             {/* Rules & Regulations */}
-            {pg.rules && pg.rules.length > 0 && (
+            {(pg.rules || []).length > 0 && (
               <div className="card p-8 animate-slide-up animate-delay-400">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                   <ShieldCheckIcon className="w-6 h-6 mr-2 text-warning-600" />
                   Rules & Regulations
                 </h2>
                 <ul className="space-y-3">
-                  {pg.rules.map((rule, index) => (
+                  {(pg.rules || []).map((rule, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <CheckCircleIcon className="w-5 h-5 text-success-500 mt-0.5 flex-shrink-0" />
                       <span className="text-gray-700 dark:text-gray-300">{rule}</span>
@@ -444,25 +451,25 @@ const PGDetails = () => {
             </div>
 
             {/* Reviews Section */}
-            <div className="card p-8 animate-slide-up animate-delay-600">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-                <StarIcon className="w-6 h-6 mr-2 text-yellow-500" />
+            <div className="card p-4 sm:p-6 lg:p-8 animate-slide-up animate-delay-600">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+                <StarIcon className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-yellow-500" />
                 Reviews & Ratings
               </h2>
 
               {/* Overall Rating */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-6 bg-gray-50 dark:bg-dark-700 rounded-2xl">
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">4.2</div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-50 dark:bg-dark-700 rounded-xl sm:rounded-2xl">
+                <div className="text-center mb-6 lg:mb-0">
+                  <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">4.2</div>
                   <div className="flex justify-center mb-2">
                     {[...Array(5)].map((_, i) => (
                       <StarIcon 
                         key={i} 
-                        className={`w-5 h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                        className={`w-4 h-4 sm:w-5 sm:h-5 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
                       />
                     ))}
                   </div>
-                  <div className="text-gray-600 dark:text-gray-400">Based on 128 reviews</div>
+                  <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Based on 128 reviews</div>
                 </div>
 
                 <div className="space-y-2">
@@ -504,7 +511,7 @@ const PGDetails = () => {
 
               {/* Individual Reviews */}
               <div className="space-y-6">
-                {reviews.slice(0, 3).map((review, index) => (
+                {(reviews || []).slice(0, 3).map((review, index) => (
                   <div key={index} className="border-b border-gray-200 dark:border-dark-600 last:border-b-0 pb-6 last:pb-0">
                     <div className="flex items-start space-x-4">
                       <img
@@ -546,57 +553,57 @@ const PGDetails = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-4 sm:space-y-6">
               {/* Contact Card */}
-              <div className="card p-6 animate-slide-left animate-delay-200">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-                  <ChatBubbleLeftRightIcon className="w-5 h-5 mr-2 text-primary-600" />
+              <div className="card p-4 sm:p-6 animate-slide-left animate-delay-200">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center">
+                  <ChatBubbleLeftRightIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary-600" />
                   Contact Owner
                 </h3>
                 
-                <div className="text-center mb-6">
+                <div className="text-center mb-4 sm:mb-6">
                   <img
-                    src={pg.owner?.avatar || '/api/placeholder/80/80'}
+                    src={pg.owner?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=80&h=80&q=80'}
                     alt={pg.owner?.name}
-                    className="w-20 h-20 rounded-2xl mx-auto mb-4 object-cover shadow-lg"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl mx-auto mb-3 sm:mb-4 object-cover shadow-lg"
                   />
-                  <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg">
                     {pg.owner?.name}
                   </h4>
-                  <p className="text-gray-600 dark:text-gray-400">Property Owner</p>
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Property Owner</p>
                   <div className="flex items-center justify-center mt-2">
                     {[...Array(5)].map((_, i) => (
                       <StarIcon 
                         key={i} 
-                        className={`w-4 h-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                        className={`w-3 h-3 sm:w-4 sm:h-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
                       />
                     ))}
-                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">(4.8)</span>
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 ml-1">(4.8)</span>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <a
                     href={`tel:${pg.contact?.phone}`}
-                    className="btn btn-primary w-full flex items-center justify-center"
+                    className="btn btn-primary w-full flex items-center justify-center text-sm sm:text-base py-2 sm:py-3"
                   >
-                    <PhoneIcon className="w-5 h-5 mr-2" />
+                    <PhoneIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Call Now
                   </a>
 
                   <button
                     onClick={() => setShowContactModal(true)}
-                    className="btn btn-outline w-full flex items-center justify-center"
+                    className="btn btn-outline w-full flex items-center justify-center text-sm sm:text-base py-2 sm:py-3"
                   >
-                    <ChatBubbleLeftRightIcon className="w-5 h-5 mr-2" />
+                    <ChatBubbleLeftRightIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Send Message
                   </button>
 
                   <a
                     href={`mailto:${pg.contact?.email}`}
-                    className="btn btn-ghost w-full flex items-center justify-center"
+                    className="btn btn-ghost w-full flex items-center justify-center text-sm sm:text-base py-2 sm:py-3"
                   >
-                    <EnvelopeIcon className="w-5 h-5 mr-2" />
+                    <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Send Email
                   </a>
                 </div>
@@ -674,13 +681,13 @@ const PGDetails = () => {
         </div>
 
         {/* Similar PGs */}
-        {similarPGs.length > 0 && (
+        {(similarPGs || []).length > 0 && (
           <div className="mt-16 animate-slide-up animate-delay-700">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
               Similar Properties You Might Like
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {similarPGs.slice(0, 3).map((similarPG, index) => (
+              {(similarPGs || []).slice(0, 3).map((similarPG, index) => (
                 <PGCard key={similarPG._id} pg={similarPG} />
               ))}
             </div>
@@ -690,21 +697,21 @@ const PGDetails = () => {
 
       {/* Image Modal */}
       {showImageModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div className="relative max-w-6xl w-full">
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-2 sm:p-4">
+          <div className="relative max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowImageModal(false)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 text-2xl"
+              className="absolute -top-8 sm:-top-12 right-0 text-white hover:text-gray-300 text-xl sm:text-2xl bg-black/50 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
             >
               ×
             </button>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
               {pg.images?.map((image, index) => (
                 <img
                   key={index}
                   src={image}
                   alt={`${pg.name} ${index + 1}`}
-                  className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-md sm:rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => {
                     setCurrentImageIndex(index);
                     setShowImageModal(false);
@@ -719,34 +726,34 @@ const PGDetails = () => {
       {/* Contact Modal */}
       {showContactModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-dark-800 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
               Send Message to {pg.owner?.name}
             </h3>
             
-            <form className="space-y-4">
+            <form className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Your Message
                 </label>
                 <textarea
                   rows="4"
-                  className="input"
+                  className="input text-sm sm:text-base"
                   placeholder="Hi, I'm interested in your PG. Could you please share more details?"
                 />
               </div>
               
-              <div className="flex space-x-3">
+              <div className="flex space-x-2 sm:space-x-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowContactModal(false)}
-                  className="btn btn-ghost flex-1"
+                  className="btn btn-ghost flex-1 text-sm sm:text-base py-2 sm:py-3"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary flex-1"
+                  className="btn btn-primary flex-1 text-sm sm:text-base py-2 sm:py-3"
                 >
                   Send Message
                 </button>

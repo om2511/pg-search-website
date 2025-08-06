@@ -19,13 +19,28 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/pgs', require('./routes/pgs'));
 
-// Database connection
+// Database connection with better error handling
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pg-search', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.log(err));
+.then(() => {
+  console.log('✅ MongoDB connected successfully');
+})
+.catch(err => {
+  console.error('❌ MongoDB connection failed:', err.message);
+  console.error('📝 Please ensure MongoDB is running and accessible at:', process.env.MONGODB_URI || 'mongodb://localhost:27017/pg-search');
+  process.exit(1);
+});
+
+// Handle MongoDB connection events
+mongoose.connection.on('disconnected', () => {
+  console.log('❌ MongoDB disconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB error:', err.message);
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

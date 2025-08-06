@@ -19,12 +19,15 @@ const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  const [pgs, setPgs] = useState([]);
+  const [allPgs, setAllPgs] = useState([]); // Store all PGs from API
+  const [displayedPgs, setDisplayedPgs] = useState([]); // PGs currently displayed
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // grid, list, map
   const [sortBy, setSortBy] = useState('createdAt');
+  const [displayCount, setDisplayCount] = useState(3); // Number of cards to display
+  const [loadIncrement] = useState(3); // Load 3 more cards each time
   
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -46,130 +49,6 @@ const Listings = () => {
   });
 
   const [appliedFilters, setAppliedFilters] = useState({});
-
-  // Mock data for demonstration - 8 PG cards total
-  const mockPGsData = [
-    {
-      _id: '1',
-      name: 'Sunshine Residency',
-      location: { city: 'Mumbai', state: 'Maharashtra', area: 'Andheri West' },
-      price: 15000,
-      gender: 'both',
-      roomType: 'double',
-      amenities: ['wifi', 'ac', 'meals', 'security', 'parking'],
-      availableRooms: 3,
-      verified: true,
-      instantBook: true,
-      rating: 4.5,
-      images: ['https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-15'
-    },
-    {
-      _id: '2',
-      name: 'Green Valley PG',
-      location: { city: 'Bangalore', state: 'Karnataka', area: 'Koramangala' },
-      price: 12000,
-      gender: 'girls',
-      roomType: 'single',
-      amenities: ['wifi', 'tv', 'fridge', 'washing_machine', 'cleaning'],
-      availableRooms: 2,
-      verified: true,
-      instantBook: false,
-      rating: 4.2,
-      images: ['https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-10'
-    },
-    {
-      _id: '3',
-      name: 'Royal Comfort PG',
-      location: { city: 'Pune', state: 'Maharashtra', area: 'Kothrud' },
-      price: 18000,
-      gender: 'boys',
-      roomType: 'single',
-      amenities: ['wifi', 'ac', 'gym', 'security', 'parking', 'meals'],
-      availableRooms: 5,
-      verified: true,
-      instantBook: true,
-      rating: 4.7,
-      images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-20'
-    },
-    {
-      _id: '4',
-      name: 'Elite Hostel',
-      location: { city: 'Delhi', state: 'Delhi', area: 'Lajpat Nagar' },
-      price: 22000,
-      gender: 'both',
-      roomType: 'triple',
-      amenities: ['wifi', 'ac', 'tv', 'fridge', 'security', 'cleaning'],
-      availableRooms: 8,
-      verified: false,
-      instantBook: true,
-      rating: 4.0,
-      images: ['https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-25'
-    },
-    {
-      _id: '5',
-      name: 'Metro Stay PG',
-      location: { city: 'Hyderabad', state: 'Telangana', area: 'Gachibowli' },
-      price: 14000,
-      gender: 'girls',
-      roomType: 'double',
-      amenities: ['wifi', 'tv', 'washing_machine', 'security', 'parking'],
-      availableRooms: 4,
-      verified: true,
-      instantBook: false,
-      rating: 4.3,
-      images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-12'
-    },
-    {
-      _id: '6',
-      name: 'Ocean View Residency',
-      location: { city: 'Chennai', state: 'Tamil Nadu', area: 'Adyar' },
-      price: 16000,
-      gender: 'both',
-      roomType: 'single',
-      amenities: ['wifi', 'ac', 'meals', 'gym', 'security'],
-      availableRooms: 6,
-      verified: true,
-      instantBook: true,
-      rating: 4.6,
-      images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-08'
-    },
-    {
-      _id: '7',
-      name: 'Smart Living PG',
-      location: { city: 'Mumbai', state: 'Maharashtra', area: 'Bandra' },
-      price: 20000,
-      gender: 'boys',
-      roomType: 'single',
-      amenities: ['wifi', 'ac', 'tv', 'fridge', 'gym', 'parking'],
-      availableRooms: 3,
-      verified: true,
-      instantBook: true,
-      rating: 4.8,
-      images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-30'
-    },
-    {
-      _id: '8',
-      name: 'Budget Friendly PG',
-      location: { city: 'Bangalore', state: 'Karnataka', area: 'BTM Layout' },
-      price: 9000,
-      gender: 'girls',
-      roomType: 'triple',
-      amenities: ['wifi', 'washing_machine', 'security', 'meals'],
-      availableRooms: 7,
-      verified: false,
-      instantBook: false,
-      rating: 3.8,
-      images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-      createdAt: '2024-01-05'
-    }
-  ];
 
   const amenityOptions = [
     { value: 'wifi', label: 'Wi-Fi', icon: '📶' },
@@ -218,144 +97,117 @@ const Listings = () => {
   }, []);
 
   useEffect(() => {
-    fetchPGs(1, true);
+    fetchPGs(true); // Fetch all pages initially
   }, [searchParams, sortBy]);
 
-  const fetchPGs = async (page = 1, reset = false) => {
-    if (page === 1) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-
+  const fetchPGs = async (loadAllPages = false) => {
+    setLoading(true);
+    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Get current filters from URL params
-      const currentFilters = {
+      // Get current filters from URL params - only backend filters
+      const backendFilters = {
         search: searchParams.get('search') || '',
         city: searchParams.get('city') || '',
         gender: searchParams.get('gender') || '',
         minPrice: searchParams.get('minPrice') || '',
         maxPrice: searchParams.get('maxPrice') || '',
-        amenities: searchParams.get('amenities')?.split(',').filter(Boolean) || [],
+        amenities: searchParams.get('amenities')?.split(',').filter(Boolean) || []
+      };
+
+      let allFetchedPGs = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+
+      // Fetch all pages of data from backend
+      while (hasMoreData && (loadAllPages || currentPage === 1)) {
+        // Build query parameters for API call - only backend filters
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: '20' // Fetch more records per request
+        });
+
+        // Add backend filters to query params
+        if (backendFilters.search) queryParams.set('search', backendFilters.search);
+        if (backendFilters.city) queryParams.set('city', backendFilters.city);
+        if (backendFilters.gender && backendFilters.gender !== '') queryParams.set('gender', backendFilters.gender);
+        if (backendFilters.minPrice) queryParams.set('minPrice', backendFilters.minPrice);
+        if (backendFilters.maxPrice) queryParams.set('maxPrice', backendFilters.maxPrice);
+        if (backendFilters.amenities.length > 0) queryParams.set('amenities', backendFilters.amenities.join(','));
+
+        // Add sorting
+        const selectedSort = sortOptions.find(opt => opt.value === sortBy);
+        if (selectedSort) {
+          queryParams.set('sortBy', selectedSort.sortBy);
+          queryParams.set('sortOrder', selectedSort.sortOrder);
+        }
+
+        // Make API call to backend
+        const response = await axios.get(`/api/pgs?${queryParams.toString()}`);
+        
+        if (response.data.success) {
+          const { pgs = [], hasMore = false } = response.data.data || {};
+          allFetchedPGs = [...allFetchedPGs, ...pgs];
+          hasMoreData = hasMore && loadAllPages;
+          currentPage++;
+        } else {
+          console.error('API response error:', response.data.message);
+          break;
+        }
+      }
+
+      // Apply frontend-only filters after getting all backend results
+      const frontendFilters = {
         roomType: searchParams.get('roomType') || '',
         verified: searchParams.get('verified') === 'true',
         instantBook: searchParams.get('instantBook') === 'true'
       };
 
-      // Filter mock data based on current filters
-      let filteredPGs = [...mockPGsData];
+      // Filter PGs on frontend for roomType, verified, instantBook
+      const filteredPGs = allFetchedPGs.filter(pg => {
+        // Room Type filter (frontend only)
+        if (frontendFilters.roomType && pg.roomType !== frontendFilters.roomType) {
+          return false;
+        }
 
-      // Apply search filter
-      if (currentFilters.search && currentFilters.search.trim() !== '') {
-        const searchTerm = currentFilters.search.toLowerCase().trim();
-        filteredPGs = filteredPGs.filter(pg => 
-          pg.name.toLowerCase().includes(searchTerm) ||
-          pg.location.city.toLowerCase().includes(searchTerm) ||
-          pg.location.area.toLowerCase().includes(searchTerm) ||
-          pg.location.state.toLowerCase().includes(searchTerm)
-        );
-      }
+        // Verified filter (frontend only)
+        if (frontendFilters.verified && !pg.verified) {
+          return false;
+        }
 
-      // Apply city filter
-      if (currentFilters.city && currentFilters.city.trim() !== '') {
-        const cityTerm = currentFilters.city.toLowerCase().trim();
-        filteredPGs = filteredPGs.filter(pg => 
-          pg.location.city.toLowerCase().includes(cityTerm)
-        );
-      }
+        // Instant Book filter (frontend only)
+        if (frontendFilters.instantBook && !pg.instantBook) {
+          return false;
+        }
 
-      // Apply gender filter
-      if (currentFilters.gender && currentFilters.gender.trim() !== '' && currentFilters.gender !== 'any') {
-        filteredPGs = filteredPGs.filter(pg => 
-          pg.gender === currentFilters.gender || pg.gender === 'both'
-        );
-      }
-
-      // Apply price range filter
-      if (currentFilters.minPrice && !isNaN(parseInt(currentFilters.minPrice))) {
-        const minPrice = parseInt(currentFilters.minPrice);
-        filteredPGs = filteredPGs.filter(pg => pg.price >= minPrice);
-      }
-      if (currentFilters.maxPrice && !isNaN(parseInt(currentFilters.maxPrice))) {
-        const maxPrice = parseInt(currentFilters.maxPrice);
-        filteredPGs = filteredPGs.filter(pg => pg.price <= maxPrice);
-      }
-
-      // Apply amenities filter
-      if (currentFilters.amenities && currentFilters.amenities.length > 0) {
-        filteredPGs = filteredPGs.filter(pg => 
-          currentFilters.amenities.every(amenity => pg.amenities.includes(amenity))
-        );
-      }
-
-      // Apply room type filter
-      if (currentFilters.roomType && currentFilters.roomType.trim() !== '') {
-        filteredPGs = filteredPGs.filter(pg => pg.roomType === currentFilters.roomType.trim());
-      }
-
-      // Apply verified filter
-      if (currentFilters.verified) {
-        filteredPGs = filteredPGs.filter(pg => pg.verified === true);
-      }
-
-      // Apply instant book filter
-      if (currentFilters.instantBook) {
-        filteredPGs = filteredPGs.filter(pg => pg.instantBook === true);
-      }
-
-      // Sort the filtered results
-      const selectedSort = sortOptions.find(opt => opt.value === sortBy);
-      if (selectedSort) {
-        filteredPGs.sort((a, b) => {
-          switch (selectedSort.sortBy) {
-            case 'price':
-              return selectedSort.sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
-            case 'rating':
-              return selectedSort.sortOrder === 'asc' ? 
-                (a.rating || 0) - (b.rating || 0) : 
-                (b.rating || 0) - (a.rating || 0);
-            case 'name':
-              return selectedSort.sortOrder === 'asc' ? 
-                a.name.localeCompare(b.name) : 
-                b.name.localeCompare(a.name);
-            case 'createdAt':
-            default:
-              return selectedSort.sortOrder === 'asc' ? 
-                new Date(a.createdAt) - new Date(b.createdAt) : 
-                new Date(b.createdAt) - new Date(a.createdAt);
-          }
-        });
-      }
-
-      // Implement pagination - 3 cards per page
-      const itemsPerPage = 3;
-      const startIndex = (page - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedPGs = filteredPGs.slice(startIndex, endIndex);
-
-      const totalPages = Math.ceil(filteredPGs.length / itemsPerPage);
-      const hasMore = page < totalPages;
-
-      if (reset || page === 1) {
-        setPgs(paginatedPGs);
-      } else {
-        setPgs(prev => [...prev, ...paginatedPGs]);
-      }
-      
-      setPagination({
-        currentPage: page,
-        totalPages,
-        total: filteredPGs.length,
-        hasMore
+        return true;
       });
+
+      // Store all PGs and reset display count
+      setAllPgs(filteredPGs);
+      setDisplayCount(3);
+      setDisplayedPgs(filteredPGs.slice(0, 3));
+      
+      // Update pagination state
+      setPagination({
+        currentPage: 1,
+        totalPages: Math.ceil(filteredPGs.length / 3),
+        total: filteredPGs.length,
+        hasMore: filteredPGs.length > 3
+      });
+
     } catch (error) {
       console.error('Error fetching PGs:', error);
+      // Fallback: show empty state or error message
+      setAllPgs([]);
+      setDisplayedPgs([]);
+      setPagination({
+        currentPage: 1,
+        totalPages: 1,
+        total: 0,
+        hasMore: false
+      });
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
   };
 
@@ -469,8 +321,23 @@ const Listings = () => {
   };
 
   const loadMore = () => {
-    if (pagination.hasMore && !loadingMore) {
-      fetchPGs(pagination.currentPage + 1, false);
+    if (displayCount < allPgs.length && !loadingMore) {
+      setLoadingMore(true);
+      
+      // Simulate loading delay for better UX
+      setTimeout(() => {
+        const newDisplayCount = Math.min(displayCount + loadIncrement, allPgs.length);
+        setDisplayCount(newDisplayCount);
+        setDisplayedPgs(allPgs.slice(0, newDisplayCount));
+        
+        // Update pagination state
+        setPagination(prev => ({
+          ...prev,
+          hasMore: newDisplayCount < allPgs.length
+        }));
+        
+        setLoadingMore(false);
+      }, 800); // 800ms delay for loading effect
     }
   };
 
@@ -490,7 +357,7 @@ const Listings = () => {
             </div>
           </div>
 
-          {/* Skeleton Grid */}
+          {/* Skeleton Grid - Show 3 cards initially */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
             {[...Array(3)].map((_, index) => (
               <div key={index} className="card animate-pulse">
@@ -521,7 +388,7 @@ const Listings = () => {
             </h1>
             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
               <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg">
-                {pagination.total} {pagination.total === 1 ? 'property' : 'properties'} found
+                {allPgs.length} {allPgs.length === 1 ? 'property' : 'properties'} found
               </p>
               {getActiveFiltersCount() > 0 && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 w-fit">
@@ -613,155 +480,169 @@ const Listings = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Global Search */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    🔍 Search PGs
-                  </label>
-                  <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search PGs, locations..."
-                      className="input pl-10"
-                      value={filters.search}
-                      onChange={(e) => handleFilterChange('search', e.target.value)}
+                {/* Backend Filters */}
+                <div className="space-y-6 pb-6 border-b border-gray-200 dark:border-dark-600">
+                  <h4 className="text-sm font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
+                    🔍 Search & Location (Backend Filters)
+                  </h4>
+                  
+                  {/* Global Search */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      🔍 Search PGs
+                    </label>
+                    <div className="relative">
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search PGs, locations..."
+                        className="input pl-10"
+                        value={filters.search}
+                        onChange={(e) => handleFilterChange('search', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location Filter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      📍 Specific Location
+                    </label>
+                    <div className="relative">
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Enter city name"
+                        className="input pl-10"
+                        value={filters.city}
+                        onChange={(e) => handleFilterChange('city', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      👥 Gender Preference
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { value: '', label: 'Any' },
+                        { value: 'boys', label: 'Boys' },
+                        { value: 'girls', label: 'Girls' },
+                        { value: 'both', label: 'Co-ed' }
+                      ].map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleFilterChange('gender', option.value)}
+                          className={`p-2 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
+                            filters.gender === option.value
+                              ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-lg'
+                              : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      💰 Price Range
+                    </label>
+                    <PriceRangeSlider
+                      min={5000}
+                      max={50000}
+                      value={{ min: parseInt(filters.minPrice) || 5000, max: parseInt(filters.maxPrice) || 50000 }}
+                      onChange={handlePriceRangeChange}
                     />
                   </div>
-                </div>
 
-                {/* Location Filter */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    📍 Specific Location
-                  </label>
-                  <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Enter city name"
-                      className="input pl-10"
-                      value={filters.city}
-                      onChange={(e) => handleFilterChange('city', e.target.value)}
-                    />
+                  {/* Amenities */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      ✨ Amenities
+                    </label>
+                    <div className="space-y-2 max-h-48 lg:max-h-64 overflow-y-auto scrollbar-thin">
+                      {amenityOptions.map((amenity) => (
+                        <label 
+                          key={amenity.value} 
+                          className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={filters.amenities.includes(amenity.value)}
+                            onChange={() => handleAmenityToggle(amenity.value)}
+                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          />
+                          <span className="text-lg">{amenity.icon}</span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">
+                            {amenity.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Gender Filter */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    👥 Gender Preference
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: '', label: 'Any' },
-                      { value: 'boys', label: 'Boys' },
-                      { value: 'girls', label: 'Girls' },
-                      { value: 'both', label: 'Co-ed' }
-                    ].map(option => (
-                      <button
-                        key={option.value}
-                        onClick={() => handleFilterChange('gender', option.value)}
-                        className={`p-2 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
-                          filters.gender === option.value
-                            ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-lg'
-                            : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-600'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                {/* Frontend Filters */}
+                <div className="space-y-6">
+                  <h4 className="text-sm font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                    ⚡ Quick Filters (Frontend Only)
+                  </h4>
+                  
+                  {/* Room Type */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      🏠 Room Type
+                    </label>
+                    <select
+                      className="input"
+                      value={filters.roomType}
+                      onChange={(e) => handleFilterChange('roomType', e.target.value)}
+                    >
+                      <option value="">Any Room Type</option>
+                      <option value="single">Single Occupancy</option>
+                      <option value="double">Double Sharing</option>
+                      <option value="triple">Triple Sharing</option>
+                      <option value="dormitory">Dormitory</option>
+                    </select>
                   </div>
-                </div>
 
-                {/* Price Range */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    💰 Price Range
-                  </label>
-                  <PriceRangeSlider
-                    min={5000}
-                    max={50000}
-                    value={{ min: parseInt(filters.minPrice) || 5000, max: parseInt(filters.maxPrice) || 50000 }}
-                    onChange={handlePriceRangeChange}
-                  />
-                </div>
-
-                {/* Room Type */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    🏠 Room Type
-                  </label>
-                  <select
-                    className="input"
-                    value={filters.roomType}
-                    onChange={(e) => handleFilterChange('roomType', e.target.value)}
-                  >
-                    <option value="">Any Room Type</option>
-                    <option value="single">Single Occupancy</option>
-                    <option value="double">Double Sharing</option>
-                    <option value="triple">Triple Sharing</option>
-                    <option value="dormitory">Dormitory</option>
-                  </select>
-                </div>
-
-                {/* Amenities */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    ✨ Amenities
-                  </label>
-                  <div className="space-y-2 max-h-48 lg:max-h-64 overflow-y-auto scrollbar-thin">
-                    {amenityOptions.map((amenity) => (
-                      <label 
-                        key={amenity.value} 
-                        className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer"
-                      >
+                  {/* Special Filters */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      ⭐ Special Features
+                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={filters.amenities.includes(amenity.value)}
-                          onChange={() => handleAmenityToggle(amenity.value)}
+                          checked={filters.verified}
+                          onChange={(e) => handleFilterChange('verified', e.target.checked)}
                           className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
-                        <span className="text-lg">{amenity.icon}</span>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">
-                          {amenity.label}
+                        <span className="text-lg">✅</span>
+                        <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">
+                          Verified Only
                         </span>
                       </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Special Filters */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    ⭐ Special Features
-                  </label>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.verified}
-                        onChange={(e) => handleFilterChange('verified', e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      />
-                      <span className="text-lg">✅</span>
-                      <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">
-                        Verified Only
-                      </span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.instantBook}
-                        onChange={(e) => handleFilterChange('instantBook', e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      />
-                      <span className="text-lg">⚡</span>
-                      <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">
-                        Instant Booking
-                      </span>
-                    </label>
+                      
+                      <label className="flex items-center space-x-3 p-2 lg:p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.instantBook}
+                          onChange={(e) => handleFilterChange('instantBook', e.target.checked)}
+                          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="text-lg">⚡</span>
+                        <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">
+                          Instant Booking
+                        </span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -879,7 +760,7 @@ const Listings = () => {
             )}
 
             {/* Results */}
-            {pgs.length === 0 ? (
+            {displayedPgs.length === 0 ? (
               <div className="text-center py-16 animate-fade-in">
                 <div className="w-24 h-24 bg-gray-200 dark:bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-6">
                   <MagnifyingGlassIcon className="w-12 h-12 text-gray-400" />
@@ -913,7 +794,7 @@ const Listings = () => {
                     ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6' 
                     : 'space-y-4 lg:space-y-6'
                 } mb-6 lg:mb-8`}>
-                  {pgs.map((pg, index) => (
+                  {displayedPgs.map((pg, index) => (
                     <div
                       key={pg._id}
                       className="animate-fade-in"
@@ -925,34 +806,38 @@ const Listings = () => {
                 </div>
 
                 {/* Load More Button */}
-                {pagination.hasMore && (
-                  <div className="text-center animate-fade-in mb-6 lg:mb-8">
-                    <button
-                      onClick={loadMore}
-                      disabled={loadingMore}
-                      className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 lg:py-4 lg:px-8 rounded-xl shadow-lg transform hover:!scale-[1.02] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none w-full sm:w-auto"
-                    >
-                      {loadingMore ? (
-                        <div className="flex items-center justify-center">
-                          <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
-                          <span className="text-sm lg:text-base">Loading more PGs...</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col sm:flex-row items-center justify-center">
-                          <span className="text-sm lg:text-base">Load More PGs</span>
-                          <span className="sm:ml-3 mt-1 sm:mt-0 text-xs lg:text-sm opacity-90 bg-white/20 px-2 py-1 rounded-full">
-                            {pagination.total - pgs.length} remaining
-                          </span>
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                )}
+                <div className="text-center animate-fade-in mb-6 lg:mb-8">
+                  <button
+                    onClick={loadMore}
+                    disabled={loadingMore || displayCount >= allPgs.length}
+                    className={`font-semibold py-3 px-6 lg:py-4 lg:px-8 rounded-xl shadow-lg transform transition-all duration-300 w-full sm:w-auto ${
+                      displayCount >= allPgs.length
+                        ? 'bg-gray-400 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white hover:!scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none'
+                    }`}
+                  >
+                    {loadingMore ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
+                        <span className="text-sm lg:text-base">Loading more PGs...</span>
+                      </div>
+                    ) : displayCount >= allPgs.length ? (
+                      <span className="text-sm lg:text-base">All PGs Loaded</span>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row items-center justify-center">
+                        <span className="text-sm lg:text-base">Load More PGs</span>
+                        <span className="sm:ml-3 mt-1 sm:mt-0 text-xs lg:text-sm opacity-90 bg-white/20 px-2 py-1 rounded-full">
+                          {allPgs.length - displayCount} remaining
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                </div>
 
                 {/* Results Summary */}
                 <div className="text-center mt-8 text-gray-600 dark:text-gray-400">
                   <p className="text-sm">
-                    Showing {pgs.length} of {pagination.total} properties
+                    Showing {displayedPgs.length} of {allPgs.length} properties
                   </p>
                 </div>
               </>
@@ -1000,155 +885,169 @@ const Listings = () => {
               </div>
               
               <div className="space-y-6">
-                {/* Global Search */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    🔍 Search PGs
-                  </label>
-                  <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search PGs, locations..."
-                      className="input pl-10"
-                      value={filters.search}
-                      onChange={(e) => handleFilterChange('search', e.target.value)}
+                {/* Backend Filters */}
+                <div className="space-y-6 pb-6 border-b border-gray-200 dark:border-dark-600">
+                  <h4 className="text-sm font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
+                    🔍 Search & Location (Backend Filters)
+                  </h4>
+                  
+                  {/* Global Search */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      🔍 Search PGs
+                    </label>
+                    <div className="relative">
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search PGs, locations..."
+                        className="input pl-10"
+                        value={filters.search}
+                        onChange={(e) => handleFilterChange('search', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location Filter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      📍 Specific Location
+                    </label>
+                    <div className="relative">
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Enter city name"
+                        className="input pl-10"
+                        value={filters.city}
+                        onChange={(e) => handleFilterChange('city', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      👥 Gender Preference
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { value: '', label: 'Any' },
+                        { value: 'boys', label: 'Boys' },
+                        { value: 'girls', label: 'Girls' },
+                        { value: 'both', label: 'Co-ed' }
+                      ].map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleFilterChange('gender', option.value)}
+                          className={`p-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                            filters.gender === option.value
+                              ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-lg'
+                              : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      💰 Price Range
+                    </label>
+                    <PriceRangeSlider
+                      min={5000}
+                      max={50000}
+                      value={{ min: parseInt(filters.minPrice) || 5000, max: parseInt(filters.maxPrice) || 50000 }}
+                      onChange={handlePriceRangeChange}
                     />
                   </div>
-                </div>
 
-                {/* Location Filter */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    📍 Specific Location
-                  </label>
-                  <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Enter city name"
-                      className="input pl-10"
-                      value={filters.city}
-                      onChange={(e) => handleFilterChange('city', e.target.value)}
-                    />
+                  {/* Amenities */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      ✨ Amenities
+                    </label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
+                      {amenityOptions.map((amenity) => (
+                        <label 
+                          key={amenity.value} 
+                          className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={filters.amenities.includes(amenity.value)}
+                            onChange={() => handleAmenityToggle(amenity.value)}
+                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          />
+                          <span className="text-lg">{amenity.icon}</span>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">
+                            {amenity.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Gender Filter */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    👥 Gender Preference
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: '', label: 'Any' },
-                      { value: 'boys', label: 'Boys' },
-                      { value: 'girls', label: 'Girls' },
-                      { value: 'both', label: 'Co-ed' }
-                    ].map(option => (
-                      <button
-                        key={option.value}
-                        onClick={() => handleFilterChange('gender', option.value)}
-                        className={`p-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                          filters.gender === option.value
-                            ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white shadow-lg'
-                            : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-600'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                {/* Frontend Filters */}
+                <div className="space-y-6">
+                  <h4 className="text-sm font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                    ⚡ Quick Filters (Frontend Only)
+                  </h4>
+                  
+                  {/* Room Type */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      🏠 Room Type
+                    </label>
+                    <select
+                      className="input"
+                      value={filters.roomType}
+                      onChange={(e) => handleFilterChange('roomType', e.target.value)}
+                    >
+                      <option value="">Any Room Type</option>
+                      <option value="single">Single Occupancy</option>
+                      <option value="double">Double Sharing</option>
+                      <option value="triple">Triple Sharing</option>
+                      <option value="dormitory">Dormitory</option>
+                    </select>
                   </div>
-                </div>
 
-                {/* Price Range */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    💰 Price Range
-                  </label>
-                  <PriceRangeSlider
-                    min={5000}
-                    max={50000}
-                    value={{ min: parseInt(filters.minPrice) || 5000, max: parseInt(filters.maxPrice) || 50000 }}
-                    onChange={handlePriceRangeChange}
-                  />
-                </div>
-
-                {/* Room Type */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    🏠 Room Type
-                  </label>
-                  <select
-                    className="input"
-                    value={filters.roomType}
-                    onChange={(e) => handleFilterChange('roomType', e.target.value)}
-                  >
-                    <option value="">Any Room Type</option>
-                    <option value="single">Single Occupancy</option>
-                    <option value="double">Double Sharing</option>
-                    <option value="triple">Triple Sharing</option>
-                    <option value="dormitory">Dormitory</option>
-                  </select>
-                </div>
-
-                {/* Amenities */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    ✨ Amenities
-                  </label>
-                  <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
-                    {amenityOptions.map((amenity) => (
-                      <label 
-                        key={amenity.value} 
-                        className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer"
-                      >
+                  {/* Special Filters */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      ⭐ Special Features
+                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={filters.amenities.includes(amenity.value)}
-                          onChange={() => handleAmenityToggle(amenity.value)}
+                          checked={filters.verified}
+                          onChange={(e) => handleFilterChange('verified', e.target.checked)}
                           className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
-                        <span className="text-lg">{amenity.icon}</span>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">
-                          {amenity.label}
+                        <span className="text-lg">✅</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                          Verified Only
                         </span>
                       </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Special Filters */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    ⭐ Special Features
-                  </label>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.verified}
-                        onChange={(e) => handleFilterChange('verified', e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      />
-                      <span className="text-lg">✅</span>
-                      <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                        Verified Only
-                      </span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.instantBook}
-                        onChange={(e) => handleFilterChange('instantBook', e.target.checked)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      />
-                      <span className="text-lg">⚡</span>
-                      <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                        Instant Booking
-                      </span>
-                    </label>
+                      
+                      <label className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.instantBook}
+                          onChange={(e) => handleFilterChange('instantBook', e.target.checked)}
+                          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="text-lg">⚡</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                          Instant Booking
+                        </span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
