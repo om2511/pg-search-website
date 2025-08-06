@@ -26,7 +26,10 @@ export const WishlistProvider = ({ children }) => {
     
     setLoading(true);
     try {
-      const response = await axios.get('/api/auth/wishlist');
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/auth/wishlist', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setWishlist(response.data.data.pgs || []);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
@@ -36,29 +39,41 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const addToWishlist = async (pgId) => {
+    console.log('Adding to wishlist:', pgId);
     if (wishlist.some(item => item._id === pgId || item === pgId)) {
+      console.log('Item already in wishlist');
       return; // Already in wishlist
     }
 
     if (isAuthenticated) {
       try {
-        await axios.post(`/api/auth/wishlist/${pgId}`);
+        console.log('Making API call to add to wishlist');
+        const token = localStorage.getItem('token');
+        await axios.post(`/api/auth/wishlist/${pgId}`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         await fetchWishlist(); // Refresh wishlist
+        console.log('Successfully added to wishlist');
       } catch (error) {
         console.error('Error adding to wishlist:', error);
       }
     } else {
       // Save to localStorage for non-authenticated users
+      console.log('Adding to localStorage wishlist');
       const newWishlist = [...wishlist, pgId];
       setWishlist(newWishlist);
       localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+      console.log('Updated localStorage wishlist:', newWishlist);
     }
   };
 
   const removeFromWishlist = async (pgId) => {
     if (isAuthenticated) {
       try {
-        await axios.delete(`/api/auth/wishlist/${pgId}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`/api/auth/wishlist/${pgId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         await fetchWishlist(); // Refresh wishlist
       } catch (error) {
         console.error('Error removing from wishlist:', error);
@@ -79,7 +94,7 @@ export const WishlistProvider = ({ children }) => {
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete('/api/user/wishlist', {
+        await axios.delete('/api/auth/wishlist', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWishlist([]);

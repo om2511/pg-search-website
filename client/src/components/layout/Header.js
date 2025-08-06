@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useWishlist } from '../../context/WishlistContext';
 import {
   Bars3Icon,
   XMarkIcon,
@@ -30,6 +31,8 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { wishlist } = useWishlist();
+  const wishlistCount = wishlist.length;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -197,7 +200,7 @@ const Header = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Mobile Search - Centered */}
             <div className="md:hidden flex-1 max-w-[160px] sm:max-w-[200px] mx-auto">
               <div className="w-full [&>*]:!py-1 [&>*]:!text-sm">
@@ -205,55 +208,60 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
-            >
-              {isDark ? (
-                <SunIcon className="w-5 h-5 sm:w-5 sm:h-5" />
-              ) : (
-                <MoonIcon className="w-5 h-5 sm:w-5 sm:h-5" />
+            {/* Desktop Icons - Hidden on mobile/tablet */}
+            <div className="hidden lg:flex items-center space-x-2">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+                title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {isDark ? (
+                  <SunIcon className="w-5 h-5" />
+                ) : (
+                  <MoonIcon className="w-5 h-5" />
+                )}
+              </button>
+
+              {isAuthenticated && (
+                <>
+                  {/* Notifications */}
+                  <div className="[&>div>button]:p-2.5 [&>div>button]:rounded-xl [&>div>button]:bg-gray-100 [&>div>button]:dark:bg-dark-800 [&>div>button]:text-gray-600 [&>div>button]:dark:text-gray-400 [&>div>button]:hover:bg-gray-200 [&>div>button]:dark:hover:bg-dark-700 [&>div>button]:transition-all [&>div>button]:duration-300 [&>div>button]:transform [&>div>button]:hover:scale-110 [&_svg]:w-5 [&_svg]:h-5">
+                    <NotificationBell />
+                  </div>
+
+                  {/* Wishlist */}
+                  <Link
+                    to="/wishlist"
+                    className="relative p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
+                    title="Wishlist"
+                  >
+                    <HeartIcon className="w-5 h-5" />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
+                        {wishlistCount > 9 ? '9+' : wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
               )}
-            </button>
+            </div>
 
             {isAuthenticated ? (
               <>
-                {/* Notifications */}
-                <NotificationBell />
-
-                {/* Wishlist */}
-                <Link
-                  to="/wishlist"
-                  className="relative p-1.5 md:p-2 lg:p-2.5 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110"
-                >
-                  <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center">
-                    3
-                  </span>
-                </Link>
-
                 {/* User Menu */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-1 md:p-1.5 lg:p-2 rounded-lg sm:rounded-xl hover:bg-gray-100 dark:hover:bg-dark-800 transition-all duration-300">
-                    <div className="w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md">
+                  <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300">
+                    <div className="w-5 h-5 bg-gradient-to-r from-primary-600 to-secondary-600 rounded flex items-center justify-center shadow-md">
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
                           alt={user.name}
-                          className="w-full h-full rounded-lg sm:rounded-xl object-cover"
+                          className="w-full h-full rounded object-cover"
                         />
                       ) : (
-                        <UserIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        <UserIcon className="w-3 h-3 text-white" />
                       )}
-                    </div>
-                    <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[100px] lg:max-w-none">
-                        {user?.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                        {user?.role}
-                      </p>
                     </div>
                   </Menu.Button>
 
@@ -366,12 +374,13 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+              className="lg:hidden p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+              title="Menu"
             >
               {isOpen ? (
-                <XMarkIcon className="w-5 h-5 sm:w-5 sm:h-5" />
+                <XMarkIcon className="w-5 h-5" />
               ) : (
-                <Bars3Icon className="w-5 h-5 sm:w-5 sm:h-5" />
+                <Bars3Icon className="w-5 h-5" />
               )}
             </button>
           </div>
@@ -469,6 +478,48 @@ const Header = () => {
                   </Link>
                 </div>
               )}
+
+              {/* Mobile Action Icons - Only visible on mobile/tablet */}
+              <div className="lg:hidden pt-4 border-t border-gray-200 dark:border-dark-700">
+                <div className="flex items-center justify-center space-x-4 py-2">
+                  {/* Theme Toggle Mobile */}
+                  <button
+                    onClick={toggleTheme}
+                    className="flex flex-col items-center space-y-1 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+                    title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  >
+                    {isDark ? (
+                      <SunIcon className="w-5 h-5" />
+                    ) : (
+                      <MoonIcon className="w-5 h-5" />
+                    )}
+                    <span className="text-xs font-medium">Theme</span>
+                  </button>
+
+                  {isAuthenticated && (
+                    <>
+                      {/* Notifications Mobile */}
+                      <NotificationBell />
+
+                      {/* Wishlist Mobile */}
+                      <Link
+                        to="/wishlist"
+                        onClick={() => setIsOpen(false)}
+                        className="relative flex flex-col items-center space-y-1 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300"
+                        title="Wishlist"
+                      >
+                        <HeartIcon className="w-5 h-5" />
+                        {wishlistCount > 0 && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
+                            {wishlistCount > 9 ? '9+' : wishlistCount}
+                          </span>
+                        )}
+                        <span className="text-xs font-medium">Wishlist</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </Transition>

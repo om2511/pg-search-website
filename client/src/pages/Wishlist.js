@@ -119,36 +119,38 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 py-8">
-      <div className="container-responsive">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 py-4 sm:py-6 lg:py-8">
+      <div className="container-responsive px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-          <div className="animate-fade-in">
-            <h1 className="text-4xl font-display font-bold text-gray-900 dark:text-white mb-2 flex items-center">
-              <HeartSolidIcon className="w-10 h-10 mr-3 text-red-500" />
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 sm:mb-8">
+          <div className="animate-fade-in mb-4 lg:mb-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+              <HeartSolidIcon className="w-8 h-8 sm:w-10 sm:h-10 mr-2 sm:mr-3 text-red-500" />
               My Wishlist
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
               {wishlistPGs.length} saved {wishlistPGs.length === 1 ? 'property' : 'properties'}
             </p>
           </div>
           
           {wishlistPGs.length > 0 && (
-            <div className="flex items-center space-x-4 mt-4 lg:mt-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-4 lg:mt-0 w-full sm:w-auto">
               <button
                 onClick={handleShare}
-                className="btn btn-outline flex items-center"
+                className="btn btn-outline flex items-center justify-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <ShareIcon className="w-5 h-5 mr-2" />
-                Share Wishlist
+                <ShareIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Share Wishlist</span>
+                <span className="sm:hidden">Share</span>
               </button>
               
               <button
                 onClick={handleClearWishlist}
-                className="btn btn-ghost text-error-600 hover:bg-error-50 dark:hover:bg-error-900/20"
+                className="btn btn-ghost text-error-600 hover:bg-error-50 dark:hover:bg-error-900/20 flex items-center justify-center text-sm sm:text-base px-3 sm:px-4 py-2"
               >
-                <TrashIcon className="w-5 h-5 mr-2" />
-                Clear All
+                <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Clear All</span>
+                <span className="sm:hidden">Clear</span>
               </button>
             </div>
           )}
@@ -156,22 +158,22 @@ const Wishlist = () => {
 
         {wishlistPGs.length === 0 ? (
           // Empty State
-          <div className="text-center py-16 animate-fade-in">
-            <div className="w-32 h-32 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <HeartIcon className="w-16 h-16 text-gray-400" />
+          <div className="text-center py-12 sm:py-16 animate-fade-in px-4">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <HeartIcon className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Your wishlist is empty
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
               Start exploring and save PGs you love. Click the heart icon on any PG to add it to your wishlist.
             </p>
             <div className="space-y-4">
-              <Link to="/listings" className="btn btn-primary btn-lg">
-                <MagnifyingGlassIcon className="w-5 h-5 mr-2" />
+              <Link to="/listings" className="btn btn-primary btn-lg w-full sm:w-auto">
+                <MagnifyingGlassIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Explore PGs
               </Link>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 💡 Tip: Save PGs to compare prices and amenities later
               </div>
             </div>
@@ -179,12 +181,12 @@ const Wishlist = () => {
         ) : (
           <>
             {/* Filters and Sort */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-6 sm:mb-8 gap-4">
+              <div className="flex flex-col xs:flex-row items-stretch xs:items-center space-y-2 xs:space-y-0 xs:space-x-4 w-full sm:w-auto">
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="input w-auto"
+                  className="input w-full xs:w-auto text-sm sm:text-base"
                 >
                   <option value="all">All Properties</option>
                   <option value="boys">Boys Only</option>
@@ -196,7 +198,7 @@ const Wishlist = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="input w-auto"
+                  className="input w-full xs:w-auto text-sm sm:text-base"
                 >
                   <option value="newest">Recently Added</option>
                   <option value="price_low">Price: Low to High</option>
@@ -205,72 +207,60 @@ const Wishlist = () => {
                 </select>
               </div>
 
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-full sm:w-auto text-center sm:text-right">
                 Showing {filteredPGs.length} of {wishlistPGs.length} properties
               </div>
             </div>
 
             {/* Wishlist Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
               {filteredPGs.map((pg, index) => (
                 <div
                   key={pg._id}
-                  className="relative animate-fade-in"
+                  className="animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <PGCard pg={pg} />
-                  
-                  {/* Remove from Wishlist Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleRemoveFromWishlist(pg._id);
-                    }}
-                    className="absolute top-4 right-4 p-2 bg-white/90 dark:bg-dark-800/90 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
-                  >
-                    <HeartSolidIcon className="w-5 h-5 text-red-500 group-hover:text-red-600" />
-                  </button>
                 </div>
               ))}
             </div>
 
             {/* Wishlist Actions */}
-            <div className="mt-12 card p-6 animate-slide-up animate-delay-500">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="mt-8 sm:mt-12 card p-4 sm:p-6 animate-slide-up animate-delay-500">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 text-center sm:text-left">
                 What's Next?
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <Link
                   to="/listings"
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-xl hover:from-primary-100 hover:to-secondary-100 dark:hover:from-primary-900/40 dark:hover:to-secondary-900/40 transition-all duration-300 group"
+                  className="flex items-center space-x-3 p-3 sm:p-4 bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-xl hover:from-primary-100 hover:to-secondary-100 dark:hover:from-primary-900/40 dark:hover:to-secondary-900/40 transition-all duration-300 group"
                 >
-                  <MagnifyingGlassIcon className="w-8 h-8 text-primary-600 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Find More PGs</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Explore more options</p>
+                  <MagnifyingGlassIcon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Find More PGs</h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Explore more options</p>
                   </div>
                 </Link>
 
                 <button
                   onClick={handleShare}
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/40 dark:hover:to-emerald-900/40 transition-all duration-300 group"
+                  className="flex items-center space-x-3 p-3 sm:p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/40 dark:hover:to-emerald-900/40 transition-all duration-300 group"
                 >
-                  <ShareIcon className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Share Wishlist</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Share with friends</p>
+                  <ShareIcon className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Share Wishlist</h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Share with friends</p>
                   </div>
                 </button>
 
                 <button
                   onClick={handleClearWishlist}
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl hover:from-red-100 hover:to-pink-100 dark:hover:from-red-900/40 dark:hover:to-pink-900/40 transition-all duration-300 group"
+                  className="flex items-center space-x-3 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl hover:from-red-100 hover:to-pink-100 dark:hover:from-red-900/40 dark:hover:to-pink-900/40 transition-all duration-300 group sm:col-span-2 lg:col-span-1"
                 >
-                  <TrashIcon className="w-8 h-8 text-red-600 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Clear Wishlist</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Start fresh</p>
+                  <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 group-hover:scale-110 transition-transform flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Clear Wishlist</h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Start fresh</p>
                   </div>
                 </button>
               </div>

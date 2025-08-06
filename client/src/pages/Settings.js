@@ -18,7 +18,7 @@ import {
 const Settings = () => {
   const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  const { showToast } = useToast();
+  const { showToast, showSuccess, showError, showWarning, showInfo } = useToast();
   
   const [settings, setSettings] = useState({
     // Notification Settings
@@ -49,6 +49,7 @@ const Settings = () => {
     { id: 'privacy', name: 'Privacy', icon: ShieldCheckIcon },
     { id: 'preferences', name: 'Preferences', icon: GlobeAltIcon },
     { id: 'security', name: 'Security', icon: KeyIcon },
+    { id: 'demo', name: 'Notifications Demo', icon: PaintBrushIcon },
   ];
 
   const handleSettingChange = (key, value) => {
@@ -373,6 +374,90 @@ const Settings = () => {
     </div>
   );
 
+  const renderNotificationDemo = () => (
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          Notification Theme Demo
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          Test the new themed notification messages that match the website's modern design.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <button
+          onClick={() => showSuccess('Success!', 'Your action completed successfully.')}
+          className="btn btn-secondary text-white hover:scale-105 transform transition-all duration-300"
+        >
+          <CheckCircleIcon className="w-5 h-5 mr-2" />
+          Success Message
+        </button>
+
+        <button
+          onClick={() => showError('Error!', 'Something went wrong. Please try again.')}
+          className="bg-gradient-to-r from-error-600 to-accent-600 hover:from-error-700 hover:to-accent-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <XCircleIcon className="w-5 h-5 mr-2 inline" />
+          Error Message
+        </button>
+
+        <button
+          onClick={() => showWarning('Warning!', 'Please review your settings before proceeding.')}
+          className="bg-gradient-to-r from-warning-600 to-amber-600 hover:from-warning-700 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <BellIcon className="w-5 h-5 mr-2 inline" />
+          Warning Message
+        </button>
+
+        <button
+          onClick={() => showInfo('Info', 'Here\'s some helpful information for you.')}
+          className="btn btn-primary hover:scale-105 transform transition-all duration-300"
+        >
+          <BellIcon className="w-5 h-5 mr-2" />
+          Info Message
+        </button>
+      </div>
+
+      <div className="bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-xl p-6 border border-primary-200/50 dark:border-primary-700/50">
+        <h4 className="text-lg font-semibold text-primary-800 dark:text-primary-200 mb-3">
+          New Design Features
+        </h4>
+        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <li>• Modern gradient backgrounds matching the website theme</li>
+          <li>• Improved icons with glassmorphism effects</li>
+          <li>• Enhanced animations and hover states</li>
+          <li>• Better mobile responsiveness</li>
+          <li>• Dark mode optimization</li>
+          <li>• Consistent color schemes across all notification types</li>
+        </ul>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Advanced Examples
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button
+            onClick={() => showToast('PG booking confirmed! Check your email for details.', 'success', 8000)}
+            className="p-4 bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-dark-600 hover:border-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all duration-300 text-left"
+          >
+            <div className="font-medium text-gray-900 dark:text-gray-100">Long Success Message</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Extended duration notification</div>
+          </button>
+
+          <button
+            onClick={() => showToast('Payment failed. Please check your card details.', 'error', 6000)}
+            className="p-4 bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-dark-600 hover:border-error-300 hover:bg-error-50 dark:hover:bg-error-900/10 transition-all duration-300 text-left"
+          >
+            <div className="font-medium text-gray-900 dark:text-gray-100">Payment Error</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Critical error notification</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'profile':
@@ -385,6 +470,8 @@ const Settings = () => {
         return renderPreferenceSettings();
       case 'security':
         return renderSecuritySettings();
+      case 'demo':
+        return renderNotificationDemo();
       default:
         return renderProfileSettings();
     }

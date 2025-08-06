@@ -6,7 +6,8 @@ const {
   addToWishlist, 
   removeFromWishlist, 
   getWishlist, 
-  checkWishlistStatus 
+  checkWishlistStatus,
+  clearWishlist
 } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 
@@ -20,6 +21,7 @@ router.get('/profile', auth, getProfile);
 router.get('/wishlist', auth, getWishlist);
 router.post('/wishlist/:pgId', auth, addToWishlist);
 router.delete('/wishlist/:pgId', auth, removeFromWishlist);
+router.delete('/wishlist', auth, clearWishlist);
 router.get('/wishlist/check/:pgId', auth, checkWishlistStatus);
 
 module.exports = router;

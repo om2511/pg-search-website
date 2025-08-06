@@ -48,9 +48,14 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('Wishlist toggle clicked for PG:', pg._id);
+    console.log('Current wishlist status:', isWishlisted);
+    
     if (isWishlisted) {
+      console.log('Removing from wishlist');
       removeFromWishlist(pg._id);
     } else {
+      console.log('Adding to wishlist');
       addToWishlist(pg._id);
     }
   };

@@ -177,6 +177,24 @@ const checkWishlistStatus = async (req, res) => {
   }
 };
 
+const clearWishlist = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    user.wishlist = [];
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Wishlist cleared successfully',
+      data: { wishlistCount: 0 }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = { 
   register, 
   login, 
@@ -184,5 +202,6 @@ module.exports = {
   addToWishlist, 
   removeFromWishlist, 
   getWishlist, 
-  checkWishlistStatus 
+  checkWishlistStatus,
+  clearWishlist
 };

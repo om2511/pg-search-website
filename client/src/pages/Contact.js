@@ -93,14 +93,14 @@ const Contact = () => {
   };
 
   return (
-    <div className="py-12 bg-gradient-to-br from-neutral-50 via-primary-50/30 to-secondary-50/20 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800">
+    <div className="py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-neutral-50 via-primary-50/30 to-secondary-50/20 dark:from-dark-950 dark:via-dark-900 dark:to-dark-800">
       {/* Header */}
-      <section className="container-responsive mb-16">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-gradient mb-6 animate-fade-in">
+      <section className="container-responsive mb-12 sm:mb-16 lg:mb-20 px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gradient mb-4 sm:mb-6 animate-fade-in leading-tight">
             Get in Touch
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed animate-slide-up animate-delay-200">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed animate-slide-up animate-delay-200 px-4 sm:px-0">
             Have questions about our services? Need help finding the perfect PG? 
             We're here to help and would love to hear from you.
           </p>
@@ -108,28 +108,28 @@ const Contact = () => {
       </section>
 
       {/* Contact Info Cards */}
-      <section className="container-responsive mb-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="container-responsive mb-12 sm:mb-16 lg:mb-20 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             return (
               <a
                 key={info.title}
                 href={info.action}
-                className={`block p-6 bg-white dark:bg-dark-800 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:scale-105 animate-scale-in`}
+                className={`block p-4 sm:p-6 lg:p-8 bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:scale-105 animate-scale-in`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  <h3 className="font-semibold text-sm sm:text-base lg:text-lg text-gray-900 dark:text-gray-100 mb-1 sm:mb-2">
                     {info.title}
                   </h3>
-                  <p className="text-primary-600 dark:text-primary-400 font-medium mb-1">
+                  <p className="text-primary-600 dark:text-primary-400 font-medium mb-1 text-xs sm:text-sm lg:text-base">
                     {info.details}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     {info.subtitle}
                   </p>
                 </div>
@@ -140,31 +140,31 @@ const Contact = () => {
       </section>
 
       {/* Contact Form */}
-      <section className="container-responsive">
-        <div className="grid lg:grid-cols-3 gap-12">
+      <section className="container-responsive px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
           {/* Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-card p-8 animate-slide-up">
-              <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-gray-100 mb-2">
+            <div className="bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl shadow-card p-6 sm:p-8 lg:p-10 animate-slide-up">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
                 Send us a Message
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-8">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
                 Fill out the form below and we'll get back to you as soon as possible.
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Category Selection */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     What can we help you with?
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {categories.map((category) => {
                       const Icon = category.icon;
                       return (
                         <label
                           key={category.value}
-                          className={`flex items-center space-x-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                          className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                             formData.category === category.value
                               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                               : 'border-gray-200 dark:border-dark-600 hover:border-primary-300'
@@ -178,12 +178,12 @@ const Contact = () => {
                             onChange={handleChange}
                             className="sr-only"
                           />
-                          <Icon className={`w-5 h-5 ${
+                          <Icon className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
                             formData.category === category.value
                               ? 'text-primary-600'
                               : 'text-gray-400'
                           }`} />
-                          <span className={`text-sm font-medium ${
+                          <span className={`text-xs sm:text-sm font-medium ${
                             formData.category === category.value
                               ? 'text-primary-700 dark:text-primary-300'
                               : 'text-gray-700 dark:text-gray-300'
@@ -197,7 +197,7 @@ const Contact = () => {
                 </div>
 
                 {/* Name and Email */}
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Full Name *
@@ -209,7 +209,7 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="input"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-dark-600 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
                       placeholder="Your full name"
                     />
                   </div>
@@ -224,14 +224,14 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="input"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-dark-600 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
                       placeholder="your.email@example.com"
                     />
                   </div>
                 </div>
 
                 {/* Phone and Subject */}
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Phone Number
@@ -242,7 +242,7 @@ const Contact = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="input"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-dark-600 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
                       placeholder="+91 98765 43210"
                     />
                   </div>
@@ -257,7 +257,7 @@ const Contact = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="input"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-dark-600 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
                       placeholder="Brief subject of your message"
                     />
                   </div>
@@ -275,7 +275,7 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="input resize-none"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-dark-600 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none min-h-[120px] sm:min-h-[140px] transition-all duration-300"
                     placeholder="Tell us more about how we can help you..."
                   />
                 </div>
@@ -284,7 +284,7 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn btn-primary btn-lg w-full"
+                  className="w-full inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 focus:scale-105 disabled:transform-none min-h-[48px] sm:min-h-[52px]"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center space-x-2">
@@ -304,43 +304,43 @@ const Contact = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* FAQ Quick Links */}
-            <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-card p-6 animate-slide-left">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <div className="bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl shadow-card p-4 sm:p-6 animate-slide-left">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">
                 Quick Help
               </h3>
-              <div className="space-y-3">
-                <a href="#" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
-                  <p className="font-medium text-gray-900 dark:text-gray-100">How to book a PG?</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Step-by-step booking guide</p>
+              <div className="space-y-2 sm:space-y-3">
+                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                  <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">How to book a PG?</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Step-by-step booking guide</p>
                 </a>
-                <a href="#" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
-                  <p className="font-medium text-gray-900 dark:text-gray-100">Payment & Refunds</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Payment policies and refund process</p>
+                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                  <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">Payment & Refunds</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Payment policies and refund process</p>
                 </a>
-                <a href="#" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
-                  <p className="font-medium text-gray-900 dark:text-gray-100">Property Verification</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">How we verify listings</p>
+                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                  <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">Property Verification</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">How we verify listings</p>
                 </a>
               </div>
             </div>
 
             {/* Response Time */}
-            <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-6 text-white animate-slide-left animate-delay-200">
-              <h3 className="text-xl font-semibold mb-4">Response Time</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                  <span>General inquiries: Within 2 hours</span>
+            <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white animate-slide-left animate-delay-200">
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Response Time</h3>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse flex-shrink-0"></div>
+                  <span className="text-xs sm:text-sm">General inquiries: Within 2 hours</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
-                  <span>Technical support: Within 4 hours</span>
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse flex-shrink-0"></div>
+                  <span className="text-xs sm:text-sm">Technical support: Within 4 hours</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-red-300 rounded-full animate-pulse"></div>
-                  <span>Complaints: Within 1 hour</span>
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <div className="w-2 h-2 bg-red-300 rounded-full animate-pulse flex-shrink-0"></div>
+                  <span className="text-xs sm:text-sm">Complaints: Within 1 hour</span>
                 </div>
               </div>
             </div>

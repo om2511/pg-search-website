@@ -72,10 +72,11 @@ const NotificationBell = () => {
 
   return (
     <Menu as="div" className="relative">
-      <Menu.Button className="relative p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110">
+      <Menu.Button className="relative flex flex-col items-center space-y-1 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110 focus:outline-none lg:space-y-0">
         <BellIcon className="w-5 h-5" />
+        <span className="text-xs font-medium lg:hidden">Alerts</span>
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
