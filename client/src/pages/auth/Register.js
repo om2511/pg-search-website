@@ -157,8 +157,12 @@ const Register = () => {
         {/* Logo & Header */}
         <div className="text-center animate-fade-in">
           <Link to="/" className="inline-flex items-center space-x-3 mb-6 group">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-110">
-              <BuildingOfficeIcon className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-white dark:bg-dark-700 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-110 overflow-hidden border border-gray-200 dark:border-dark-600">
+              <img 
+                src="/logo.png" 
+                alt="FindMyPG Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="text-left">
               <h1 className="text-2xl font-display font-bold text-gradient">

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import Toast from '../components/common/Toast';
 
 const ToastContext = createContext();
@@ -13,9 +13,11 @@ export const useToast = () => {
 
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
+  const toastIdCounter = useRef(0);
 
   const addToast = useCallback((type, title, message, duration = 5000) => {
-    const id = Date.now();
+    toastIdCounter.current += 1;
+    const id = `${Date.now()}-${toastIdCounter.current}`;
     const toast = { id, type, title, message, duration };
     
     setToasts(prev => [...prev, toast]);

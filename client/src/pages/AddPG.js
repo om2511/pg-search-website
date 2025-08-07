@@ -175,6 +175,28 @@ const AddPG = () => {
     }
   };
 
+  const compressImage = (file, quality = 0.7) => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions (max 800px width)
+        const maxWidth = 800;
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(resolve, 'image/jpeg', quality);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     
@@ -186,31 +208,53 @@ const AddPG = () => {
     setImageUploading(true);
     
     try {
-      const uploadPromises = files.map(file => {
-        return new Promise((resolve, reject) => {
-          // Validate file
-          if (!file.type.startsWith('image/')) {
-            reject(new Error(`${file.name} is not an image`));
-            return;
-          }
+      // Validate files first
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) {
+          throw new Error(`${file.name} is not an image`);
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+          throw new Error(`${file.name} is too large (max 5MB)`);
+        }
+      }
+
+      // Upload images to server one by one
+      const token = localStorage.getItem('token');
+      const uploadedImageUrls = [];
+
+      for (const file of files) {
+        try {
+          // Compress image before upload
+          const compressedFile = await compressImage(file);
           
-          if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            reject(new Error(`${file.name} is too large (max 5MB)`));
-            return;
-          }
+          const formDataUpload = new FormData();
+          formDataUpload.append('image', compressedFile, file.name);
 
+          const response = await axios.post('/api/upload/image', formDataUpload, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+
+          uploadedImageUrls.push(response.data.imageUrl);
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          // If upload fails, create a compressed local preview URL as fallback
+          const compressedFile = await compressImage(file, 0.5); // More compression for fallback
           const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      });
-
-      const imageDataUrls = await Promise.all(uploadPromises);
+          const imageDataUrl = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(compressedFile);
+          });
+          uploadedImageUrls.push(imageDataUrl);
+        }
+      }
       
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, ...imageDataUrls]
+        images: [...prev.images, ...uploadedImageUrls]
       }));
       
       showSuccess('Images uploaded', `${files.length} image(s) added successfully`);
@@ -276,8 +320,14 @@ const AddPG = () => {
     setLoading(true);
 
     try {
+      // Filter out base64 images and keep only server URLs
+      const serverImages = formData.images.filter(img => 
+        img.startsWith('http') || img.startsWith('/uploads')
+      );
+
       const submitData = {
         ...formData,
+        images: serverImages, // Only send server URLs, not base64 data
         price: parseInt(formData.price),
         securityDeposit: parseInt(formData.securityDeposit) || 0,
         totalRooms: parseInt(formData.totalRooms),
@@ -294,6 +344,7 @@ const AddPG = () => {
       showSuccess('PG Listed Successfully!', 'Your PG is now live and available for bookings');
       navigate(`/pg/${response.data.data._id}`);
     } catch (error) {
+      console.error('Submit error:', error);
       showError('Listing Failed', error.response?.data?.message || 'Error creating PG listing');
     } finally {
       setLoading(false);
@@ -369,7 +420,7 @@ const AddPG = () => {
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Gender Preference *
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { value: 'boys', label: 'Boys Only', emoji: '👨' },
                     { value: 'girls', label: 'Girls Only', emoji: '👩' },
@@ -385,8 +436,8 @@ const AddPG = () => {
                           : 'bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-600'
                       }`}
                     >
-                      <div className="text-2xl mb-1">{option.emoji}</div>
-                      <div className="text-sm font-medium">{option.label}</div>
+                      <div className="text-lg sm:text-2xl mb-1">{option.emoji}</div>
+                      <div className="text-xs sm:text-sm font-medium">{option.label}</div>
                     </button>
                   ))}
                 </div>
@@ -541,7 +592,7 @@ const AddPG = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Available From
@@ -583,12 +634,12 @@ const AddPG = () => {
               Upload Photos
             </h2>
 
-            <div className="border-2 border-dashed border-gray-300 dark:border-dark-600 rounded-2xl p-8 text-center hover:border-primary-500 dark:hover:border-primary-400 transition-colors">
-              <CloudArrowUpIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="border-2 border-dashed border-gray-300 dark:border-dark-600 rounded-2xl p-6 sm:p-8 text-center hover:border-primary-500 dark:hover:border-primary-400 transition-colors">
+              <CloudArrowUpIcon className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Upload PG Photos
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6">
                 Add up to 10 high-quality photos. First photo will be the main display image.
               </p>
               
@@ -596,10 +647,10 @@ const AddPG = () => {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={imageUploading}
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary btn-lg w-full sm:w-auto"
               >
                 {imageUploading ? (
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-center">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                     Uploading...
                   </div>
@@ -631,7 +682,7 @@ const AddPG = () => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Uploaded Photos ({formData.images.length}/10)
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {formData.images.map((image, index) => (
                     <div key={index} className="relative group">
                       <img
@@ -679,20 +730,20 @@ const AddPG = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 capitalize">
                     {category} Amenities
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {categoryAmenities.map((amenity) => (
                       <button
                         key={amenity.value}
                         type="button"
                         onClick={() => handleAmenityChange(amenity.value)}
-                        className={`p-4 rounded-xl text-left transition-all duration-300 border-2 ${
+                        className={`p-3 sm:p-4 rounded-xl text-left transition-all duration-300 border-2 ${
                           formData.amenities.includes(amenity.value)
                             ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
                             : 'border-gray-200 dark:border-dark-600 hover:border-gray-300 dark:hover:border-dark-500'
                         }`}
                       >
-                        <div className="text-2xl mb-2">{amenity.icon}</div>
-                        <div className="font-medium text-gray-900 dark:text-white text-sm">
+                        <div className="text-xl sm:text-2xl mb-2">{amenity.icon}</div>
+                        <div className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">
                           {amenity.label}
                         </div>
                       </button>
@@ -707,21 +758,21 @@ const AddPG = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Available Room Types
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {roomTypeOptions.map((roomType) => (
                   <label
                     key={roomType.value}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                       formData.roomTypes.includes(roomType.value)
                         ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
                         : 'border-gray-200 dark:border-dark-600 hover:border-gray-300 dark:hover:border-dark-500'
                     }`}
                   >
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white">
+                      <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
                         {roomType.label}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         {roomType.price}
                       </div>
                     </div>
@@ -789,34 +840,34 @@ const AddPG = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Listing Summary
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">PG Name:</span>
-                  <span className="font-medium text-gray-900 dark:text-white ml-2">{formData.name}</span>
+                  <span className="font-medium text-gray-900 dark:text-white ml-2 block sm:inline">{formData.name}</span>
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Location:</span>
-                  <span className="font-medium text-gray-900 dark:text-white ml-2">
+                  <span className="font-medium text-gray-900 dark:text-white ml-2 block sm:inline">
                     {formData.location.city}, {formData.location.state}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Price:</span>
-                  <span className="font-medium text-primary-600 ml-2">₹{formData.price}/month</span>
+                  <span className="font-medium text-primary-600 ml-2 block sm:inline">₹{formData.price}/month</span>
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Total Rooms:</span>
-                  <span className="font-medium text-gray-900 dark:text-white ml-2">{formData.totalRooms}</span>
+                  <span className="font-medium text-gray-900 dark:text-white ml-2 block sm:inline">{formData.totalRooms}</span>
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Gender:</span>
-                  <span className="font-medium text-gray-900 dark:text-white ml-2 capitalize">
+                  <span className="font-medium text-gray-900 dark:text-white ml-2 block sm:inline capitalize">
                     {formData.gender === 'both' ? 'Co-ed' : formData.gender}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Amenities:</span>
-                  <span className="font-medium text-gray-900 dark:text-white ml-2">
+                  <span className="font-medium text-gray-900 dark:text-white ml-2 block sm:inline">
                     {formData.amenities.length} selected
                   </span>
                 </div>
@@ -835,25 +886,25 @@ const AddPG = () => {
       <div className="container-responsive">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex items-center space-x-4 mb-8 animate-fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8 animate-fade-in">
             <button
               onClick={() => navigate(-1)}
-              className="p-3 bg-white dark:bg-dark-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+              className="p-3 bg-white dark:bg-dark-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 self-start sm:self-center"
             >
               <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
             </button>
-            <div>
-              <h1 className="text-4xl font-display font-bold text-gray-900 dark:text-white">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-gray-900 dark:text-white">
                 Add New PG Listing
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 Fill in the details to create your PG listing
               </p>
             </div>
           </div>
 
           {/* Progress Stepper */}
-          <div className="card p-6 mb-8 animate-slide-down animate-delay-200">
+          <div className="card p-4 sm:p-6 mb-8 animate-slide-down animate-delay-200">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => {
                 const Icon = step.icon;
@@ -861,39 +912,41 @@ const AddPG = () => {
                 const isCompleted = currentStep > step.id;
                 
                 return (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
-                      isCompleted
-                        ? 'bg-success-600 text-white'
-                        : isActive
-                        ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-200 dark:bg-dark-700 text-gray-400'
-                    }`}>
-                      {isCompleted ? (
-                        <CheckCircleIcon className="w-6 h-6" />
-                      ) : (
-                        <Icon className="w-6 h-6" />
-                      )}
-                    </div>
-                    <div className="ml-3 hidden sm:block">
-                      <div className={`text-sm font-medium ${
-                        isActive || isCompleted 
-                          ? 'text-gray-900 dark:text-white' 
-                          : 'text-gray-500 dark:text-gray-400'
+                  <div key={step.id} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center flex-1">
+                      <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                        isCompleted
+                          ? 'bg-success-600 text-white'
+                          : isActive
+                          ? 'bg-primary-600 text-white shadow-lg'
+                          : 'bg-gray-200 dark:bg-dark-700 text-gray-400'
                       }`}>
-                        Step {step.id}
+                        {isCompleted ? (
+                          <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        ) : (
+                          <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        )}
                       </div>
-                      <div className={`text-xs ${
-                        isActive || isCompleted 
-                          ? 'text-gray-600 dark:text-gray-300' 
-                          : 'text-gray-400 dark:text-gray-500'
-                      }`}>
-                        {step.name}
+                      <div className="mt-2 text-center">
+                        <div className={`text-xs font-medium ${
+                          isActive || isCompleted 
+                            ? 'text-gray-900 dark:text-white' 
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {step.id}
+                        </div>
+                        <div className={`text-xs hidden sm:block ${
+                          isActive || isCompleted 
+                            ? 'text-gray-600 dark:text-gray-300' 
+                            : 'text-gray-400 dark:text-gray-500'
+                        }`}>
+                          {step.name}
+                        </div>
                       </div>
                     </div>
                     
                     {index < steps.length - 1 && (
-                      <div className={`hidden sm:block w-12 h-1 mx-4 rounded-full transition-all duration-300 ${
+                      <div className={`flex-1 h-0.5 mx-1 sm:mx-2 rounded-full transition-all duration-300 ${
                         currentStep > step.id ? 'bg-success-600' : 'bg-gray-200 dark:bg-dark-700'
                       }`}></div>
                     )}
@@ -901,20 +954,27 @@ const AddPG = () => {
                 );
               })}
             </div>
+            
+            {/* Mobile Step Labels */}
+            <div className="sm:hidden mt-3 text-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {steps[currentStep - 1].name}
+              </span>
+            </div>
           </div>
 
           {/* Form Content */}
-          <div className="card p-8 animate-zoom-in animate-delay-300">
+          <div className="card p-4 sm:p-6 lg:p-8 animate-zoom-in animate-delay-300">
             <form onSubmit={currentStep === steps.length ? handleSubmit : (e) => { e.preventDefault(); nextStep(); }}>
               {renderStepContent()}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-8 border-t border-gray-200 dark:border-dark-600 mt-8">
+              <div className="flex flex-col sm:flex-row justify-between pt-6 sm:pt-8 border-t border-gray-200 dark:border-dark-600 mt-6 sm:mt-8 gap-3 sm:gap-0">
                 <button
                   type="button"
                   onClick={prevStep}
                   disabled={currentStep === 1}
-                  className="btn btn-ghost disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-ghost disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
                 >
                   <ArrowLeftIcon className="w-5 h-5 mr-2" />
                   Previous
@@ -924,10 +984,10 @@ const AddPG = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-primary btn-lg order-1 sm:order-2"
                   >
                     {loading ? (
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                         Creating Listing...
                       </div>
@@ -941,7 +1001,7 @@ const AddPG = () => {
                 ) : (
                   <button
                     type="submit"
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-primary btn-lg order-1 sm:order-2"
                   >
                     Next Step
                     <ArrowRightIcon className="w-5 h-5 ml-2" />

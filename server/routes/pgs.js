@@ -32,6 +32,9 @@ router.route('/:id')
   .put(auth, updatePG)
   .delete(auth, deletePG);
 
+// Status update route
+router.patch('/:id/status', auth, updatePG);
+
 // Review routes
 router.route('/:id/reviews')
   .get(getPGReviews)

@@ -112,7 +112,8 @@ export const AuthProvider = ({ children }) => {
       ...state,
       login,
       register,
-      logout
+      logout,
+      loadUser
     }}>
       {children}
     </AuthContext.Provider>

@@ -128,7 +128,7 @@ const SearchAutocomplete = ({ onSearch, placeholder = "Search PGs, locations..."
             ref={inputRef}
             type="text"
             placeholder={placeholder}
-            className="w-full pl-10 pr-10 py-2 lg:py-3 border border-gray-200 dark:border-dark-600 rounded-xl bg-white dark:bg-dark-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-dark-600 rounded-xl bg-white dark:bg-dark-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 text-sm"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setShowSuggestions(true)}

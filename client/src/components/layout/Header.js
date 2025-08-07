@@ -36,6 +36,30 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Prevent body scroll lock when dropdowns are open
+  useEffect(() => {
+    const preventScrollLock = () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    };
+
+    // Set up a mutation observer to watch for changes
+    const observer = new MutationObserver(() => {
+      preventScrollLock();
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    preventScrollLock();
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -67,6 +91,15 @@ const Header = () => {
     { name: 'Add PG', href: '/add-pg', icon: PlusCircleIcon },
     { name: 'Dashboard', href: '/owner/dashboard', icon: ChartBarIcon },
   ];
+
+  // Combine more links with owner links for authenticated owners
+  const getMoreDropdownLinks = () => {
+    let links = [...moreLinks];
+    if (isAuthenticated && user?.role === 'owner') {
+      links = [...links, ...ownerLinks];
+    }
+    return links;
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-b border-gray-200 dark:border-dark-700 shadow-lg">
@@ -115,11 +148,11 @@ const Header = () => {
             })}
 
             {/* More Dropdown */}
-            <Menu as="div" className="relative">
+            <Menu as="div" className="relative dropdown-container">
               {({ open }) => (
                 <>
                   <Menu.Button className={`flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 focus:outline-none text-sm lg:text-base ${
-                    open || moreLinks.some(link => isActivePath(link.href))
+                    open || getMoreDropdownLinks().some(link => isActivePath(link.href))
                       ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300 shadow-md'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-primary-600 dark:hover:text-primary-400'
                   }`}>
@@ -138,10 +171,11 @@ const Header = () => {
                   >
                     <Menu.Items 
                       static
-                      className="absolute left-0 mt-2 w-44 lg:w-48 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down z-50"
+                      className="dropdown-content left-0 mt-2 w-44 lg:w-48 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down"
                     >
-                      {moreLinks.map((link) => {
+                      {getMoreDropdownLinks().map((link, index) => {
                         const Icon = link.icon;
+                        const isOwnerLink = ownerLinks.some(ownerLink => ownerLink.href === link.href);
                         return (
                           <Menu.Item key={link.name}>
                             {({ active, close }) => (
@@ -150,9 +184,13 @@ const Header = () => {
                                 onClick={() => close()}
                                 className={`flex items-center space-x-3 px-4 py-3 text-sm transition-all duration-200 ${
                                   isActivePath(link.href)
-                                    ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
+                                    ? isOwnerLink
+                                      ? 'bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300'
+                                      : 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
                                     : active
-                                    ? 'bg-gray-100 dark:bg-dark-700 text-primary-600 dark:text-primary-400'
+                                    ? isOwnerLink
+                                      ? 'bg-gray-100 dark:bg-dark-700 text-accent-600 dark:text-accent-400'
+                                      : 'bg-gray-100 dark:bg-dark-700 text-primary-600 dark:text-primary-400'
                                     : 'text-gray-700 dark:text-gray-300'
                                 }`}
                               >
@@ -168,28 +206,6 @@ const Header = () => {
                 </>
               )}
             </Menu>
-
-            {isAuthenticated && user?.role === 'owner' && (
-              <>
-                {ownerLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Link
-                      key={link.name}
-                      to={link.href}
-                      className={`flex items-center space-x-2 px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 text-sm lg:text-base ${
-                        isActivePath(link.href)
-                          ? 'bg-gradient-to-r from-accent-100 to-warning-100 dark:from-accent-900 dark:to-warning-900 text-accent-700 dark:text-accent-300 shadow-md'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-accent-600 dark:hover:text-accent-400'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{link.name}</span>
-                    </Link>
-                  );
-                })}
-              </>
-            )}
           </nav>
 
           {/* Search Bar */}
@@ -250,7 +266,7 @@ const Header = () => {
             {isAuthenticated ? (
               <>
                 {/* User Menu */}
-                <Menu as="div" className="relative">
+                <Menu as="div" className="relative dropdown-container">
                   <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300">
                     <div className="w-5 h-5 bg-gradient-to-r from-primary-600 to-secondary-600 rounded flex items-center justify-center shadow-md">
                       {user?.avatar ? (
@@ -273,7 +289,10 @@ const Header = () => {
                     leaveFrom="opacity-1 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down z-50">
+                    <Menu.Items 
+                      static
+                      className="dropdown-content right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down"
+                    >
                       <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-600">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user?.name}
@@ -418,8 +437,9 @@ const Header = () => {
               })}
 
               {/* More Links in Mobile */}
-              {moreLinks.map((link) => {
+              {getMoreDropdownLinks().map((link) => {
                 const Icon = link.icon;
+                const isOwnerLink = ownerLinks.some(ownerLink => ownerLink.href === link.href);
                 return (
                   <Link
                     key={link.name}
@@ -427,7 +447,9 @@ const Header = () => {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] ${
                       isActivePath(link.href)
-                        ? 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300'
+                        ? isOwnerLink
+                          ? 'bg-gradient-to-r from-accent-100 to-warning-100 dark:from-accent-900 dark:to-warning-900 text-accent-700 dark:text-accent-300'
+                          : 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 text-primary-700 dark:text-primary-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800'
                     }`}
                   >
@@ -436,29 +458,6 @@ const Header = () => {
                   </Link>
                 );
               })}
-
-              {isAuthenticated && user?.role === 'owner' && (
-                <>
-                  {ownerLinks.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.name}
-                        to={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] ${
-                          isActivePath(link.href)
-                            ? 'bg-gradient-to-r from-accent-100 to-warning-100 dark:from-accent-900 dark:to-warning-900 text-accent-700 dark:text-accent-300'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800'
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                        <span>{link.name}</span>
-                      </Link>
-                    );
-                  })}
-                </>
-              )}
 
               {!isAuthenticated && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200 dark:border-dark-700">

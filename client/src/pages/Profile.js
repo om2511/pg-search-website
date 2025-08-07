@@ -122,7 +122,7 @@ const Profile = () => {
       formData.append('avatar', file);
 
       const token = localStorage.getItem('token');
-      const response = await axios.post('/api/user/avatar', formData, {
+      const response = await axios.post('/api/auth/avatar', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -140,11 +140,15 @@ const Profile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple simultaneous calls
+    if (loading) return;
+    
     setLoading(true);
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put('/api/user/profile', formData, {
+      await axios.put('/api/auth/profile', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -152,6 +156,27 @@ const Profile = () => {
       await loadUser(); // Refresh user data
     } catch (error) {
       showError('Update failed', error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePreferencesUpdate = async () => {
+    // Prevent multiple simultaneous calls
+    if (loading) return;
+    
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put('/api/auth/profile', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      showSuccess('Preferences saved', 'Your preferences have been saved successfully');
+      await loadUser(); // Refresh user data
+    } catch (error) {
+      showError('Save failed', error.response?.data?.message || 'Failed to save preferences');
     } finally {
       setLoading(false);
     }
@@ -173,7 +198,7 @@ const Profile = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put('/api/user/password', {
+      await axios.put('/api/auth/password', {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword
       }, {
@@ -244,16 +269,16 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 py-4 sm:py-6 lg:py-8">
       <div className="container-responsive">
         <div className="max-w-4xl mx-auto">
           {/* Profile Header */}
-          <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg p-8 mb-8 animate-fade-in">
-            <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+          <div className="bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 animate-fade-in">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 lg:space-x-8">
               {/* Profile Picture */}
-              <div className="relative">
-                <div className="w-32 h-32 rounded-2xl overflow-hidden bg-gradient-to-r from-primary-600 to-secondary-600 p-1 shadow-lg">
-                  <div className="w-full h-full rounded-2xl overflow-hidden bg-white dark:bg-dark-800">
+              <div className="relative flex-shrink-0">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-r from-primary-600 to-secondary-600 p-1 shadow-lg">
+                  <div className="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-dark-800">
                     {user.avatar ? (
                       <img
                         src={user.avatar}
@@ -262,7 +287,7 @@ const Profile = () => {
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 flex items-center justify-center">
-                        <UserIcon className="w-12 h-12 text-primary-600 dark:text-primary-400" />
+                        <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary-600 dark:text-primary-400" />
                       </div>
                     )}
                   </div>
@@ -271,12 +296,12 @@ const Profile = () => {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={imageLoading}
-                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 disabled:opacity-50"
+                  className="absolute -bottom-1.5 -right-1.5 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 disabled:opacity-50"
                 >
                   {imageLoading ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : (
-                    <CameraIcon className="w-5 h-5" />
+                    <CameraIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </button>
                 
@@ -290,39 +315,39 @@ const Profile = () => {
               </div>
 
               {/* Profile Info */}
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="flex-1 text-center sm:text-left">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {user.name}
                 </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400 mb-4 capitalize">
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 capitalize">
                   {user.role} Account
                 </p>
                 
-                <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6">
-                  <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                    <EnvelopeIcon className="w-4 h-4" />
-                    <span>{user.email}</span>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <EnvelopeIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="break-all">{user.email}</span>
                   </div>
                   {user.phone && (
-                    <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                      <PhoneIcon className="w-4 h-4" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                      <PhoneIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{user.phone}</span>
                     </div>
                   )}
-                  <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                    <CalendarIcon className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                  <div className="badge badge-primary">
-                    <ShieldCheckIcon className="w-4 h-4 mr-1" />
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
+                  <div className="badge badge-primary text-xs sm:text-sm">
+                    <ShieldCheckIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                     Verified Account
                   </div>
                   {user.role === 'owner' && (
-                    <div className="badge badge-success">
-                      <BuildingOfficeIcon className="w-4 h-4 mr-1" />
+                    <div className="badge badge-success text-xs sm:text-sm">
+                      <BuildingOfficeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       Property Owner
                     </div>
                   )}
@@ -332,34 +357,34 @@ const Profile = () => {
           </div>
 
           {/* Tabs */}
-          <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg overflow-hidden animate-slide-up animate-delay-200">
-            <div className="border-b border-gray-200 dark:border-dark-600">
-              <nav className="flex space-x-0">
+          <div className="bg-white dark:bg-dark-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden animate-slide-up animate-delay-200">
+            <div className="border-b border-gray-200 dark:border-dark-600 overflow-x-auto">
+              <nav className="flex space-x-0 min-w-max">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center space-x-2 px-6 py-4 font-medium text-sm transition-all duration-300 border-b-2 ${
+                      className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-2 px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-medium text-xs sm:text-sm transition-all duration-300 border-b-2 whitespace-nowrap ${
                         activeTab === tab.id
                           ? 'border-primary-600 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
                           : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.name}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="hidden xs:inline sm:inline">{tab.name}</span>
                     </button>
                   );
                 })}
               </nav>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-6 lg:p-8">
               {/* Profile Tab */}
               {activeTab === 'profile' && (
-                <form onSubmit={handleProfileUpdate} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={handleProfileUpdate} className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Full Name
@@ -451,7 +476,7 @@ const Profile = () => {
                     Search Preferences
                   </h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Preferred Budget Range
@@ -493,7 +518,7 @@ const Profile = () => {
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                       Preferred Amenities
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                       {[
                         'wifi', 'ac', 'tv', 'fridge', 'washing_machine', 
                         'parking', 'security', 'meals', 'cleaning', 'gym'
@@ -523,11 +548,11 @@ const Profile = () => {
 
                   <div className="flex justify-end">
                     <button
-                      onClick={handleProfileUpdate}
+                      onClick={handlePreferencesUpdate}
                       disabled={loading}
                       className="btn btn-primary"
                     >
-                      Save Preferences
+                      {loading ? 'Saving...' : 'Save Preferences'}
                     </button>
                   </div>
                 </div>
@@ -628,7 +653,7 @@ const Profile = () => {
                       </Link>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {userPGs.map((pg) => (
                         <div
                           key={pg._id}
@@ -684,26 +709,26 @@ const Profile = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex space-x-2 pt-2">
+                            <div className="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-2 pt-2">
                               <Link
                                 to={`/pg/${pg._id}`}
-                                className="flex-1 btn btn-outline btn-sm"
+                                className="flex-1 btn btn-outline btn-sm text-xs sm:text-sm"
                               >
-                                <EyeIcon className="w-4 h-4 mr-1" />
-                                View
+                                <EyeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                                <span className="hidden xs:inline">View</span>
                               </Link>
                               <Link
                                 to={`/edit-pg/${pg._id}`}
-                                className="flex-1 btn btn-primary btn-sm"
+                                className="flex-1 btn btn-primary btn-sm text-xs sm:text-sm"
                               >
-                                <PencilIcon className="w-4 h-4 mr-1" />
-                                Edit
+                                <PencilIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                                <span className="hidden xs:inline">Edit</span>
                               </Link>
                               <button
                                 onClick={() => handleDeletePG(pg._id)}
-                                className="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                className="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs sm:text-sm xs:px-2"
                               >
-                                <TrashIcon className="w-4 h-4" />
+                                <TrashIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                               </button>
                             </div>
                           </div>
@@ -759,50 +784,6 @@ const Profile = () => {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-up animate-delay-500">
-            <Link
-              to="/wishlist"
-              className="card card-hover p-6 text-center group"
-            >
-              <HeartIcon className="w-12 h-12 text-red-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                My Wishlist
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                View saved PGs
-              </p>
-            </Link>
-
-            {user.role === 'owner' && (
-              <Link
-                to="/owner/dashboard"
-                className="card card-hover p-6 text-center group"
-              >
-                <ChartBarIcon className="w-12 h-12 text-primary-600 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Dashboard
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Manage your properties
-                </p>
-              </Link>
-            )}
-
-            <Link
-              to="/help"
-              className="card card-hover p-6 text-center group"
-            >
-              <ShieldCheckIcon className="w-12 h-12 text-success-600 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Help & Support
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Get assistance
-              </p>
-            </Link>
           </div>
         </div>
       </div>

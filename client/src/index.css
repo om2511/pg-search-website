@@ -11,6 +11,9 @@
   body {
     @apply text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-dark-900 transition-colors duration-300;
     font-family: cursive;
+    /* Prevent scroll locking from Headless UI components */
+    overflow: unset !important;
+    padding-right: 0 !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -233,6 +236,23 @@
 }
 
 @layer utilities {
+  /* Prevent scroll lock utilities */
+  .dropdown-container {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    z-index: 9999;
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .no-scroll-lock * {
+    overflow: unset !important;
+    padding-right: 0 !important;
+  }
   .perspective-1000 {
     perspective: 1000px;
   }

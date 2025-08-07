@@ -31,6 +31,35 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  bio: {
+    type: String,
+    trim: true
+  },
+  location: {
+    city: {
+      type: String,
+      trim: true
+    },
+    state: {
+      type: String,
+      trim: true
+    }
+  },
+  preferences: {
+    budget: {
+      type: String,
+      trim: true
+    },
+    gender: {
+      type: String,
+      enum: ['boys', 'girls', 'both', ''],
+      default: ''
+    },
+    amenities: [{
+      type: String,
+      trim: true
+    }]
+  },
   wishlist: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PG'

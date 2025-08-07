@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const PG = require('../models/PG');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', {
@@ -195,10 +197,140 @@ const clearWishlist = async (req, res) => {
   }
 };
 
+// Profile Update
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { name, phone, bio, location, preferences } = req.body;
+    
+    const updateData = {
+      name,
+      phone,
+      bio,
+      location,
+      preferences
+    };
+    
+    // Remove undefined fields
+    Object.keys(updateData).forEach(key => 
+      updateData[key] === undefined && delete updateData[key]
+    );
+    
+    const user = await User.findByIdAndUpdate(
+      userId, 
+      updateData, 
+      { new: true, runValidators: true }
+    ).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: user
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Avatar Upload
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+    console.log('Avatar upload request:', { userId, file: req.file ? req.file.filename : 'No file' });
+    
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'No file uploaded' 
+      });
+    }
+    
+    // Create avatar URL
+    const avatarUrl = `/uploads/${req.file.filename}`;
+    console.log('Generated avatar URL:', avatarUrl);
+    
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar: avatarUrl },
+      { new: true }
+    ).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
+    }
+    
+    console.log('Avatar updated for user:', user.name, 'Avatar URL:', user.avatar);
+    
+    res.json({
+      success: true,
+      message: 'Avatar updated successfully',
+      data: {
+        avatar: user.avatar,
+        user: user
+      }
+    });
+  } catch (error) {
+    console.error('Avatar upload error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
+  }
+};
+
+// Password Update
+const updatePassword = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Verify current password
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+    
+    // Update password
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = { 
   register, 
   login, 
   getProfile, 
+  updateProfile,
+  uploadAvatar,
+  updatePassword,
   addToWishlist, 
   removeFromWishlist, 
   getWishlist, 

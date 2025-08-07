@@ -71,26 +71,32 @@ const NotificationBell = () => {
   };
 
   return (
-    <Menu as="div" className="relative">
-      <Menu.Button className="relative flex flex-col items-center space-y-1 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110 focus:outline-none lg:space-y-0">
-        <BellIcon className="w-5 h-5" />
-        <span className="text-xs font-medium lg:hidden">Alerts</span>
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </Menu.Button>
+    <Menu as="div" className="relative dropdown-container">
+      {({ open }) => (
+        <>
+          <Menu.Button className="relative flex flex-col items-center space-y-1 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 transform hover:scale-110 focus:outline-none lg:space-y-0">
+            <BellIcon className="w-5 h-5" />
+            <span className="text-xs font-medium lg:hidden">Alerts</span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Menu.Button>
 
-      <Transition
-        enter="transition ease-out duration-200"
-        enterFrom="opacity-0 scale-95"
-        enterTo="opacity-1 scale-100"
-        leave="transition ease-in duration-150"
-        leaveFrom="opacity-1 scale-100"
-        leaveTo="opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute right-0 mt-2 w-80 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down">
+          <Transition
+            show={open}
+            enter="transition ease-out duration-200"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-1 scale-100"
+            leave="transition ease-in duration-150"
+            leaveFrom="opacity-1 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Menu.Items 
+              static
+              className="dropdown-content right-0 mt-2 w-80 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-600 py-2 focus:outline-none animate-slide-down"
+            >
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-dark-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Notifications
@@ -152,8 +158,10 @@ const NotificationBell = () => {
               View all notifications
             </button>
           </div>
-        </Menu.Items>
-      </Transition>
+            </Menu.Items>
+          </Transition>
+        </>
+      )}
     </Menu>
   );
 };
