@@ -5,6 +5,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import PGCard from '../components/common/PGCard';
 import GoogleMaps from '../components/common/GoogleMaps';
+import { getPGImageUrl, getImageUrl, getPlaceholderImage } from '../utils/imageUtils';
 import axios from 'axios';
 import {
   MapPinIcon,
@@ -189,7 +190,7 @@ const PGDetails = () => {
       {/* Hero Image Section */}
       <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] overflow-hidden">
         <img
-          src={pg.images?.[currentImageIndex] || '/api/placeholder/1200/500'}
+          src={getImageUrl(pg.images?.[currentImageIndex]) || getPlaceholderImage(1200, 500)}
           alt={pg.name}
           className="w-full h-full object-cover"
         />
@@ -709,7 +710,7 @@ const PGDetails = () => {
               {pg.images?.map((image, index) => (
                 <img
                   key={index}
-                  src={image}
+                  src={getImageUrl(image) || getPlaceholderImage()}
                   alt={`${pg.name} ${index + 1}`}
                   className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-md sm:rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => {

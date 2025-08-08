@@ -12,12 +12,16 @@ import PGDetails from './pages/PGDetails';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import AddPG from './pages/AddPG';
+import EditPG from './pages/EditPG';
 import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Settings from './pages/Settings';
 import OwnerDashboard from './pages/owner/Dashboard';
+import ManagePGs from './pages/owner/ManagePGs';
+import Analytics from './pages/owner/Analytics';
+import Inquiries from './pages/owner/Inquiries';
 import axios from 'axios';
 
 // Set base URL for API calls
@@ -40,12 +44,16 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/add-pg" element={<AddPG />} />
+                    <Route path="/edit-pg/:id" element={<EditPG />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+                    <Route path="/owner/manage-pgs" element={<ManagePGs />} />
+                    <Route path="/owner/analytics" element={<Analytics />} />
+                    <Route path="/owner/inquiries" element={<Inquiries />} />
                   </Routes>
                 </main>
                 <Footer />

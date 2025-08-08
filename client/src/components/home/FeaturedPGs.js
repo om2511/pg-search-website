@@ -24,11 +24,25 @@ const FeaturedPGs = () => {
   const fetchFeaturedPGs = async () => {
     try {
       const response = await axios.get('/api/pgs?limit=3&featured=true');
-      setPgs(response.data.data.pgs || []);
+      const fetchedPGs = response.data.data.pgs || [];
+      
+      // If no featured PGs, get the latest 3 PGs
+      if (fetchedPGs.length === 0) {
+        const fallbackResponse = await axios.get('/api/pgs?limit=3&sort=-createdAt');
+        setPgs(fallbackResponse.data.data.pgs || []);
+      } else {
+        setPgs(fetchedPGs);
+      }
     } catch (error) {
       console.error('Error fetching PGs:', error);
-      // Set empty array on error
-      setPgs([]);
+      // Try to get any PGs as fallback
+      try {
+        const fallbackResponse = await axios.get('/api/pgs?limit=3');
+        setPgs(fallbackResponse.data.data.pgs || []);
+      } catch (fallbackError) {
+        console.error('Error fetching fallback PGs:', fallbackError);
+        setPgs([]);
+      }
     } finally {
       setLoading(false);
     }

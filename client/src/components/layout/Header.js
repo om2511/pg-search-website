@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
 import {
   Bars3Icon,
   XMarkIcon,
@@ -32,6 +33,7 @@ const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { wishlist } = useWishlist();
+  const { showSuccess } = useToast();
   const wishlistCount = wishlist.length;
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,6 +64,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
+    showSuccess('Signed out successfully', 'Come back soon!');
     navigate('/');
   };
 

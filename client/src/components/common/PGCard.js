@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../../context/WishlistContext';
+import { getPGImageUrl, getPlaceholderImage } from '../../utils/imageUtils';
 import { 
   MapPinIcon, 
   CurrencyRupeeIcon,
@@ -89,7 +90,7 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
               <div className="absolute inset-0 bg-gray-300 dark:bg-dark-600 animate-pulse"></div>
             )}
             <img
-              src={imageError ? '/api/placeholder/400/250' : (pg.images?.[0] || '/api/placeholder/400/250')}
+              src={imageError ? getPlaceholderImage(400, 250) : getPGImageUrl(pg, 0)}
               alt={pg.name}
               className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
@@ -215,7 +216,7 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
           <div className="absolute inset-0 bg-gray-300 dark:bg-dark-600 animate-pulse"></div>
         )}
         <img
-          src={imageError ? '/api/placeholder/400/250' : (pg.images?.[0] || '/api/placeholder/400/250')}
+          src={imageError ? getPlaceholderImage(400, 250) : getPGImageUrl(pg, 0)}
           alt={pg.name}
           className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
             isImageLoaded ? 'opacity-100' : 'opacity-0'
