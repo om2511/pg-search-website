@@ -698,27 +698,57 @@ const PGDetails = () => {
 
       {/* Image Modal */}
       {showImageModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-2 sm:p-4">
-          <div className="relative max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+          <div className="relative max-w-6xl w-full max-h-[85vh] bg-black/20 rounded-xl p-4 sm:p-6">
+            {/* Close Button - Fixed positioning */}
             <button
               onClick={() => setShowImageModal(false)}
-              className="absolute -top-8 sm:-top-12 right-0 text-white hover:text-gray-300 text-xl sm:text-2xl bg-black/50 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-gray-300 text-2xl sm:text-3xl bg-black/70 hover:bg-black/90 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center transition-all duration-300 z-10 shadow-lg"
+              style={{ zIndex: 60 }}
             >
               ×
             </button>
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
-              {pg.images?.map((image, index) => (
-                <img
-                  key={index}
-                  src={getImageUrl(image) || getPlaceholderImage()}
-                  alt={`${pg.name} ${index + 1}`}
-                  className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-md sm:rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => {
-                    setCurrentImageIndex(index);
-                    setShowImageModal(false);
-                  }}
-                />
-              ))}
+            
+            {/* Modal Header */}
+            <div className="text-center mb-4 sm:mb-6">
+              <h3 className="text-white text-lg sm:text-xl font-semibold">
+                {pg.name} - All Photos ({pg.images?.length || 0})
+              </h3>
+            </div>
+
+            {/* Scrollable Images Container */}
+            <div className="max-h-[calc(85vh-120px)] overflow-y-auto scrollbar-thin pr-2">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {pg.images && pg.images.length > 0 ? (
+                  pg.images.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={getImageUrl(image) || getPlaceholderImage(400, 300)}
+                        alt={`${pg.name} - Photo ${index + 1}`}
+                        className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-all duration-300 transform group-hover:scale-105 shadow-lg"
+                        onClick={() => {
+                          setCurrentImageIndex(index);
+                          setShowImageModal(false);
+                        }}
+                        onError={(e) => {
+                          e.target.src = getPlaceholderImage(400, 300);
+                        }}
+                      />
+                      {/* Image overlay with index */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-end">
+                        <div className="text-white text-xs sm:text-sm font-medium p-2 sm:p-3">
+                          Photo {index + 1}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <PhotoIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                    <p className="text-white text-lg">No photos available</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
