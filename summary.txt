@@ -1,0 +1,31 @@
+Project Summary: PG Search Website (Phase 1)
+
+Overview:
+This project is a full-stack web application designed to help users search for Paying Guest (PG) accommodations.
+It features a modern frontend built with React and Tailwind CSS, and a backend powered by Node.js and Express, with MongoDB as the database.
+The application allows users to browse, search, and view details of PG listings, as well as register, log in, and manage their profiles.
+
+Key Features Implemented:
+- User authentication (register, login, logout)
+- Search and filter PG listings
+- View detailed information for each PG
+- Add, edit, and manage PG listings (for owners)
+- Wishlist functionality for users
+- Profile management
+- Responsive UI with Tailwind CSS
+- Image upload and optimization
+- Basic analytics for owners
+
+Challenges Faced:
+- Integrating Google Maps for location-based search and display
+- Handling image uploads and optimization efficiently
+- Implementing secure authentication and authorization
+- Ensuring responsive design across devices
+- Managing state and context in React for features like authentication and wishlist
+
+Resolution:
+Most challenges were addressed by using appropriate libraries, thorough testing, and following best practices for both frontend and backend development.
+Documentation and modular code structure helped in maintaining clarity and scalability.
+
+Submitted by: Om Prajapati
+Date: 15th August 2025
