@@ -176,11 +176,11 @@ const Footer = () => {
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-start space-x-3 text-gray-400 hover:text-white transition-colors">
                   <MapPinIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base break-words">123 Business Park, Mumbai, Maharashtra 400001</span>
+                  <span className="text-sm sm:text-base break-words">123 Tech Hub, Ahmedabad, Gujarat 380001</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors">
                   <PhoneIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">+91 98765 43210</span>
+                  <span className="text-sm sm:text-base">+91 12345 67890</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors">
                   <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 flex-shrink-0" />

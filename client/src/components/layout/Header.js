@@ -27,6 +27,7 @@ import {
 import { Menu, Transition } from '@headlessui/react';
 import SearchAutocomplete from '../common/SearchAutocomplete';
 import NotificationBell from '../common/NotificationBell';
+import { getAvatarUrl, getUserInitials } from '../../utils/imageUtils';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -272,15 +273,23 @@ const Header = () => {
                 <Menu as="div" className="relative dropdown-container">
                   <Menu.Button className="flex items-center space-x-2 sm:space-x-3 p-2.5 rounded-xl bg-gray-100 dark:bg-dark-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300">
                     <div className="w-5 h-5 bg-gradient-to-r from-primary-600 to-secondary-600 rounded flex items-center justify-center shadow-md">
-                      {user?.avatar ? (
+                      {user?.avatar && getAvatarUrl(user.avatar) ? (
                         <img
-                          src={user.avatar}
+                          src={getAvatarUrl(user.avatar)}
                           alt={user.name}
                           className="w-full h-full rounded object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
                         />
-                      ) : (
-                        <UserIcon className="w-3 h-3 text-white" />
-                      )}
+                      ) : null}
+                      <div 
+                        className={`w-full h-full rounded flex items-center justify-center text-white text-xs font-medium ${user?.avatar && getAvatarUrl(user.avatar) ? 'hidden' : 'flex'}`}
+                        style={{ display: user?.avatar && getAvatarUrl(user.avatar) ? 'none' : 'flex' }}
+                      >
+                        {user?.name ? getUserInitials(user.name) : <UserIcon className="w-3 h-3" />}
+                      </div>
                     </div>
                   </Menu.Button>
 

@@ -37,3 +37,29 @@ export const getPGImageUrl = (pg, index = 0) => {
   
   return imageUrl || getPlaceholderImage();
 };
+
+/**
+ * Get avatar URL with fallback handling
+ * @param {string} avatarPath - The avatar path from user object
+ * @returns {string|null} - Avatar URL or null for default handling
+ */
+export const getAvatarUrl = (avatarPath) => {
+  if (!avatarPath) return null;
+  return getImageUrl(avatarPath);
+};
+
+/**
+ * Generate user initials for avatar fallback
+ * @param {string} name - User's full name
+ * @returns {string} - User initials (max 2 characters)
+ */
+export const getUserInitials = (name) => {
+  if (!name) return 'U';
+  
+  const names = name.trim().split(' ');
+  if (names.length === 1) {
+    return names[0].charAt(0).toUpperCase();
+  }
+  
+  return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+};

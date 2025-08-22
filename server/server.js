@@ -56,6 +56,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/pgs', require('./routes/pgs'));
 app.use('/api/owner', require('./routes/owner'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/inquiries', require('./routes/inquiries'));
 
 // Database connection with better error handling
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pg-search', {

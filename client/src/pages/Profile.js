@@ -21,6 +21,7 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { getAvatarUrl, getUserInitials } from '../utils/imageUtils';
 
 const Profile = () => {
   const { user, loadUser } = useAuth();
@@ -279,14 +280,21 @@ const Profile = () => {
               <div className="relative flex-shrink-0">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-r from-primary-600 to-secondary-600 p-1 shadow-lg">
                   <div className="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-dark-800">
-                    {user.avatar ? (
+                    {user.avatar && getAvatarUrl(user.avatar) ? (
                       <img
-                        src={user.avatar}
+                        src={getAvatarUrl(user.avatar)}
                         alt={user.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 flex items-center justify-center">
+                    ) : null}
+                    <div 
+                      className={`w-full h-full bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 flex items-center justify-center ${user.avatar && getAvatarUrl(user.avatar) ? 'hidden' : 'flex'}`}
+                      style={{ display: user.avatar && getAvatarUrl(user.avatar) ? 'none' : 'flex' }}
+                    >
                         <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary-600 dark:text-primary-400" />
                       </div>
                     )}

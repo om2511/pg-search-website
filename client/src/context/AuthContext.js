@@ -69,9 +69,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const res = await axios.get('/api/auth/profile', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get('/api/auth/profile');
         dispatch({ type: 'LOAD_USER', payload: res.data.data });
       } catch (error) {
         dispatch({ type: 'LOGOUT' });

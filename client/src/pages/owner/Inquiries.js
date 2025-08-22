@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import axios from 'axios';
+import { getAvatarUrl, getUserInitials } from '../../utils/imageUtils';
 import {
   ChatBubbleLeftRightIcon,
   PhoneIcon,
@@ -331,15 +332,23 @@ const InquiryCard = ({ inquiry, onMarkAsRead, onReply, getTimeAgo, getUrgencyCol
         <div className="flex-1">
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0">
-              {inquiry.user?.avatar ? (
+              {inquiry.user?.avatar && getAvatarUrl(inquiry.user.avatar) ? (
                 <img
-                  src={inquiry.user.avatar}
+                  src={getAvatarUrl(inquiry.user.avatar)}
                   alt={inquiry.user?.name || 'User'}
                   className="w-12 h-12 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
                 />
-              ) : (
-                <UserCircleIcon className="w-12 h-12 text-gray-400" />
-              )}
+              ) : null}
+              <div 
+                className={`w-12 h-12 rounded-full bg-gradient-to-r from-primary-600 to-secondary-600 flex items-center justify-center text-white font-medium ${inquiry.user?.avatar && getAvatarUrl(inquiry.user.avatar) ? 'hidden' : 'flex'}`}
+                style={{ display: inquiry.user?.avatar && getAvatarUrl(inquiry.user.avatar) ? 'none' : 'flex' }}
+              >
+                {inquiry.user?.name ? getUserInitials(inquiry.user.name) : <UserCircleIcon className="w-8 h-8" />}
+              </div>
             </div>
             
             <div className="flex-1">
