@@ -320,45 +320,4 @@ const PGCard = ({ pg, viewMode = 'grid' }) => {
   );
 };
 
-// Skeleton component for loading state
-const PGCardSkeleton = () => (
-  <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-lg overflow-hidden animate-pulse">
-    <div className="h-48 bg-gray-300 dark:bg-dark-600"></div>
-    <div className="p-6">
-      <div className="h-4 bg-gray-300 dark:bg-dark-600 rounded w-3/4 mb-2"></div>
-      <div className="h-3 bg-gray-300 dark:bg-dark-600 rounded w-1/2 mb-4"></div>
-      <div className="flex space-x-2 mb-4">
-        <div className="h-6 bg-gray-300 dark:bg-dark-600 rounded-full w-16"></div>
-        <div className="h-6 bg-gray-300 dark:bg-dark-600 rounded-full w-16"></div>
-      </div>
-      <div className="h-6 bg-gray-300 dark:bg-dark-600 rounded w-1/4"></div>
-    </div>
-  </div>
-);
-
-// Mock data for fallback
-const mockPGs = [
-  {
-    _id: '1',
-    name: 'Sunshine Residency',
-    location: { city: 'Mumbai', state: 'Maharashtra' },
-    price: 15000,
-    gender: 'both',
-    amenities: ['wifi', 'ac', 'meals', 'security', 'parking'],
-    availableRooms: 3,
-    images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-  },
-  {
-    _id: '2',
-    name: 'Green Valley PG',
-    location: { city: 'Bangalore', state: 'Karnataka' },
-    price: 12000,
-    gender: 'girls',
-    amenities: ['wifi', 'tv', 'fridge', 'washing_machine', 'cleaning'],
-    availableRooms: 2,
-    images: ['https://images.unsplash.com/photo-1540518614846-7eded47c0419?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-  },
-  // Add more mock data as needed...
-];
-
 export default PGCard;

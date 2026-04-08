@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import axios from 'axios';
 import {
   ChartBarIcon,
@@ -9,13 +8,11 @@ import {
   CurrencyRupeeIcon,
   BuildingOfficeIcon,
   ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  CalendarIcon
+  ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 
 const Analytics = () => {
   const { user } = useAuth();
-  const { showError } = useToast();
   
   const [analytics, setAnalytics] = useState({
     overview: {
@@ -36,13 +33,7 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('thisMonth');
 
-  useEffect(() => {
-    if (user?.role === 'owner') {
-      fetchAnalytics();
-    }
-  }, [user, timeframe]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`/api/owner/analytics?timeframe=${timeframe}`, {
@@ -57,7 +48,13 @@ const Analytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeframe]);
+
+  useEffect(() => {
+    if (user?.role === 'owner') {
+      fetchAnalytics();
+    }
+  }, [user, fetchAnalytics]);
 
   const getMockAnalytics = () => ({
     overview: {

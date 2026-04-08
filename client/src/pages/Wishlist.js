@@ -1,35 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
-import { useAuth } from '../context/AuthContext';
 import PGCard from '../components/common/PGCard';
 import {
   HeartIcon,
   TrashIcon,
   ShareIcon,
-  FunnelIcon,
-  MagnifyingGlassIcon,
-  ExclamationTriangleIcon
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 const Wishlist = () => {
-  const { wishlist, loading, removeFromWishlist, clearWishlist } = useWishlist();
-  const { isAuthenticated } = useAuth();
+  const { wishlist, loading, clearWishlist } = useWishlist();
   const [wishlistPGs, setWishlistPGs] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
   const [filterBy, setFilterBy] = useState('all');
 
-  useEffect(() => {
-    if (wishlist.length > 0) {
-      fetchWishlistPGs();
-    } else {
-      setFetchLoading(false);
-    }
-  }, [wishlist]);
-
-  const fetchWishlistPGs = async () => {
+  const fetchWishlistPGs = useCallback(async () => {
     try {
       // For authenticated users, wishlist contains full PG objects from API
       setWishlistPGs(wishlist);
@@ -38,11 +26,15 @@ const Wishlist = () => {
     } finally {
       setFetchLoading(false);
     }
-  };
+  }, [wishlist]);
 
-  const handleRemoveFromWishlist = (pgId) => {
-    removeFromWishlist(pgId);
-  };
+  useEffect(() => {
+    if (wishlist.length > 0) {
+      fetchWishlistPGs();
+    } else {
+      setFetchLoading(false);
+    }
+  }, [wishlist, fetchWishlistPGs]);
 
   const handleClearWishlist = () => {
     if (window.confirm('Are you sure you want to clear your entire wishlist?')) {
@@ -81,6 +73,8 @@ const Wishlist = () => {
           break;
         case 'premium':
           filtered = filtered.filter(pg => pg.price > 20000);
+          break;
+        default:
           break;
       }
     }

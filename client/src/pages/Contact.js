@@ -311,18 +311,18 @@ const Contact = () => {
                 Quick Help
               </h3>
               <div className="space-y-2 sm:space-y-3">
-                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                <button type="button" className="block w-full text-left p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
                   <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">How to book a PG?</p>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Step-by-step booking guide</p>
-                </a>
-                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                </button>
+                <button type="button" className="block w-full text-left p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
                   <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">Payment & Refunds</p>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Payment policies and refund process</p>
-                </a>
-                <a href="#" className="block p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
+                </button>
+                <button type="button" className="block w-full text-left p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 transition-colors">
                   <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">Property Verification</p>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">How we verify listings</p>
-                </a>
+                </button>
               </div>
             </div>
 

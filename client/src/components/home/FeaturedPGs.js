@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import PGCard from '../common/PGCard';
 import PGCardSkeleton from '../common/PGCardSkeleton';
 import { 
   ArrowRightIcon, 
-  FunnelIcon,
   ViewColumnsIcon,
   Squares2X2Icon 
 } from '@heroicons/react/24/outline';
@@ -15,13 +14,7 @@ const FeaturedPGs = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [filter, setFilter] = useState('all');
-  const [visibleCount, setVisibleCount] = useState(3);
-
-  useEffect(() => {
-    fetchFeaturedPGs();
-  }, []);
-
-  const fetchFeaturedPGs = async () => {
+  const fetchFeaturedPGs = useCallback(async () => {
     try {
       const response = await axios.get('/api/pgs?limit=3&featured=true');
       const fetchedPGs = response.data.data.pgs || [];
@@ -46,7 +39,11 @@ const FeaturedPGs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchFeaturedPGs();
+  }, [fetchFeaturedPGs]);
 
   const filterPGs = () => {
     if (filter === 'all') return pgs;

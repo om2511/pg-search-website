@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -12,8 +12,6 @@ import {
   PhoneIcon,
   EnvelopeIcon,
   BuildingOfficeIcon,
-  ChartBarIcon,
-  HeartIcon,
   CogIcon,
   KeyIcon,
   BellIcon,
@@ -21,7 +19,7 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { getAvatarUrl, getUserInitials } from '../utils/imageUtils';
+import { getAvatarUrl } from '../utils/imageUtils';
 
 const Profile = () => {
   const { user, loadUser } = useAuth();
@@ -123,7 +121,7 @@ const Profile = () => {
       formData.append('avatar', file);
 
       const token = localStorage.getItem('token');
-      const response = await axios.post('/api/auth/avatar', formData, {
+      await axios.post('/api/auth/avatar', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -215,7 +213,7 @@ const Profile = () => {
     }
   };
 
-  const fetchUserPGs = async () => {
+  const fetchUserPGs = useCallback(async () => {
     if (user?.role !== 'owner') return;
     
     setPgsLoading(true);
@@ -228,7 +226,7 @@ const Profile = () => {
     } finally {
       setPgsLoading(false);
     }
-  };
+  }, [showError, user]);
 
   const handleDeletePG = async (pgId) => {
     if (!window.confirm('Are you sure you want to delete this PG listing?')) return;
@@ -248,7 +246,7 @@ const Profile = () => {
     if (activeTab === 'my-pgs' && user?.role === 'owner') {
       fetchUserPGs();
     }
-  }, [activeTab, user]);
+  }, [activeTab, user, fetchUserPGs]);
 
   const tabs = [
     { id: 'profile', name: 'Profile', icon: UserIcon },
@@ -291,13 +289,12 @@ const Profile = () => {
                         }}
                       />
                     ) : null}
-                    <div 
+                    <div
                       className={`w-full h-full bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900 flex items-center justify-center ${user.avatar && getAvatarUrl(user.avatar) ? 'hidden' : 'flex'}`}
                       style={{ display: user.avatar && getAvatarUrl(user.avatar) ? 'none' : 'flex' }}
                     >
-                        <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary-600 dark:text-primary-400" />
-                      </div>
-                    )}
+                      <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary-600 dark:text-primary-400" />
+                    </div>
                   </div>
                 </div>
                 

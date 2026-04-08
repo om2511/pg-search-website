@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import PGCard from '../components/common/PGCard';
 import PriceRangeSlider from '../components/common/PriceRangeSlider';
@@ -8,7 +8,6 @@ import {
   XMarkIcon, 
   AdjustmentsHorizontalIcon,
   MagnifyingGlassIcon,
-  ViewColumnsIcon,
   Squares2X2Icon,
   ArrowPathIcon,
   MapIcon,
@@ -17,7 +16,6 @@ import {
 
 const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   
   const [allPgs, setAllPgs] = useState([]); // Store all PGs from API
   const [displayedPgs, setDisplayedPgs] = useState([]); // PGs currently displayed
@@ -29,7 +27,7 @@ const Listings = () => {
   const [displayCount, setDisplayCount] = useState(3); // Number of cards to display
   const [loadIncrement] = useState(3); // Load 3 more cards each time
   
-  const [pagination, setPagination] = useState({
+  const [, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     total: 0,
@@ -89,18 +87,7 @@ const Listings = () => {
     setAppliedFilters(urlFilters);
   }, [searchParams]);
 
-  // Cleanup on unmount (no longer needed for debounce timeouts)
-  useEffect(() => {
-    return () => {
-      // Cleanup if needed
-    };
-  }, []);
-
-  useEffect(() => {
-    fetchPGs(true); // Fetch all pages initially
-  }, [searchParams, sortBy]);
-
-  const fetchPGs = async (loadAllPages = false) => {
+  const fetchPGs = useCallback(async (loadAllPages = false) => {
     setLoading(true);
     
     try {
@@ -135,10 +122,21 @@ const Listings = () => {
         if (backendFilters.amenities.length > 0) queryParams.set('amenities', backendFilters.amenities.join(','));
 
         // Add sorting
-        const selectedSort = sortOptions.find(opt => opt.value === sortBy);
-        if (selectedSort) {
-          queryParams.set('sortBy', selectedSort.sortBy);
-          queryParams.set('sortOrder', selectedSort.sortOrder);
+        if (sortBy === 'price_low') {
+          queryParams.set('sortBy', 'price');
+          queryParams.set('sortOrder', 'asc');
+        } else if (sortBy === 'price_high') {
+          queryParams.set('sortBy', 'price');
+          queryParams.set('sortOrder', 'desc');
+        } else if (sortBy === 'name') {
+          queryParams.set('sortBy', 'name');
+          queryParams.set('sortOrder', 'asc');
+        } else if (sortBy === 'name_desc') {
+          queryParams.set('sortBy', 'name');
+          queryParams.set('sortOrder', 'desc');
+        } else {
+          queryParams.set('sortBy', 'createdAt');
+          queryParams.set('sortOrder', 'desc');
         }
 
         // Make API call to backend
@@ -209,37 +207,16 @@ const Listings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams, sortBy]);
+
+  useEffect(() => {
+    fetchPGs(true); // Fetch all pages initially
+  }, [fetchPGs]);
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     // Note: Filters are no longer auto-applied. User must click "Apply Filters" button.
-  };
-
-  const applyFiltersImmediately = (filtersToApply) => {
-    try {
-      const params = new URLSearchParams();
-      
-      Object.entries(filtersToApply).forEach(([filterKey, filterValue]) => {
-        if (filterKey === 'amenities') {
-          if (filterValue && Array.isArray(filterValue) && filterValue.length > 0) {
-            params.set(filterKey, filterValue.join(','));
-          }
-        } else if (typeof filterValue === 'boolean') {
-          if (filterValue === true) {
-            params.set(filterKey, 'true');
-          }
-        } else if (filterValue && filterValue.toString().trim() !== '') {
-          params.set(filterKey, filterValue.toString().trim());
-        }
-      });
-      
-      setSearchParams(params);
-      setAppliedFilters(filtersToApply);
-    } catch (error) {
-      console.error('Error applying filters:', error);
-    }
   };
 
   const handleAmenityToggle = (amenity) => {
@@ -779,7 +756,7 @@ const Listings = () => {
                     Clear All Filters
                   </button>
                   <button
-                    onClick={() => navigate('/listings')}
+                    onClick={clearFilters}
                     className="btn btn-primary"
                   >
                     View All PGs

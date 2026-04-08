@@ -1,11 +1,11 @@
 // src/pages/PGDetails.js - Enhanced PG Details Page
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import PGCard from '../components/common/PGCard';
 import GoogleMaps from '../components/common/GoogleMaps';
-import { getPGImageUrl, getImageUrl, getPlaceholderImage } from '../utils/imageUtils';
+import { getImageUrl, getPlaceholderImage } from '../utils/imageUtils';
 import axios from 'axios';
 import {
   MapPinIcon,
@@ -26,7 +26,6 @@ import {
   CalendarIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ChatBubbleLeftRightIcon,
   EyeIcon,
   FlagIcon
@@ -45,16 +44,9 @@ const PGDetails = () => {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [reviews, setReviews] = useState([]);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
   const [similarPGs, setSimilarPGs] = useState([]);
 
-  useEffect(() => {
-    fetchPGDetails();
-    fetchReviews();
-    fetchSimilarPGs();
-  }, [id]);
-
-  const fetchPGDetails = async () => {
+  const fetchPGDetails = useCallback(async () => {
     try {
       const response = await axios.get(`/api/pgs/${id}`);
       setPg(response.data.data);
@@ -64,9 +56,9 @@ const PGDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showError]);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const response = await axios.get(`/api/pgs/${id}/reviews`);
       // Extract the reviews array from the response data
@@ -76,9 +68,9 @@ const PGDetails = () => {
       console.error('Error fetching reviews:', error);
       setReviews([]); // Ensure reviews is always an array
     }
-  };
+  }, [id]);
 
-  const fetchSimilarPGs = async () => {
+  const fetchSimilarPGs = useCallback(async () => {
     try {
       const response = await axios.get(`/api/pgs/similar/${id}`);
       setSimilarPGs(Array.isArray(response.data.data) ? response.data.data : []);
@@ -86,7 +78,13 @@ const PGDetails = () => {
       console.error('Error fetching similar PGs:', error);
       setSimilarPGs([]); // Ensure similarPGs is always an array
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchPGDetails();
+    fetchReviews();
+    fetchSimilarPGs();
+  }, [fetchPGDetails, fetchReviews, fetchSimilarPGs]);
 
   const handleWishlistToggle = () => {
     if (isInWishlist(pg._id)) {
@@ -688,7 +686,7 @@ const PGDetails = () => {
               Similar Properties You Might Like
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(similarPGs || []).slice(0, 3).map((similarPG, index) => (
+              {(similarPGs || []).slice(0, 3).map((similarPG) => (
                 <PGCard key={similarPG._id} pg={similarPG} />
               ))}
             </div>
@@ -724,7 +722,7 @@ const PGDetails = () => {
                     <div key={index} className="relative group">
                       <img
                         src={getImageUrl(image) || getPlaceholderImage(400, 300)}
-                        alt={`${pg.name} - Photo ${index + 1}`}
+                        alt={`${pg.name} ${index + 1}`}
                         className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-all duration-300 transform group-hover:scale-105 shadow-lg"
                         onClick={() => {
                           setCurrentImageIndex(index);

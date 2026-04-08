@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import axios from 'axios';
@@ -17,19 +17,12 @@ import {
 const ManagePGs = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useToast();
-  const navigate = useNavigate();
   
   const [pgs, setPgs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, available, unavailable
 
-  useEffect(() => {
-    if (user?.role === 'owner') {
-      fetchPGs();
-    }
-  }, [user]);
-
-  const fetchPGs = async () => {
+  const fetchPGs = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/api/pgs/my-pgs', {
@@ -42,7 +35,13 @@ const ManagePGs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user?.role === 'owner') {
+      fetchPGs();
+    }
+  }, [user, fetchPGs]);
 
   const handleDeletePG = async (pgId, pgName) => {
     if (!window.confirm(`Are you sure you want to delete "${pgName}"? This action cannot be undone.`)) return;

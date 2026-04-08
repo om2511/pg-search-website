@@ -7,10 +7,8 @@ import {
   EyeSlashIcon,
   EnvelopeIcon,
   LockClosedIcon,
-  BuildingOfficeIcon,
   UserIcon,
   ArrowRightIcon,
-  CheckCircleIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 

@@ -9,9 +9,7 @@ import {
   PlusIcon,
   MapPinIcon,
   CurrencyRupeeIcon,
-  UserGroupIcon,
   HomeIcon,
-  ClockIcon,
   InformationCircleIcon,
   CheckCircleIcon,
   ArrowLeftIcon,
@@ -295,6 +293,8 @@ const AddPG = () => {
         break;
       case 4:
         if (formData.amenities.length === 0) newErrors.amenities = 'Select at least one amenity';
+        break;
+      default:
         break;
     }
     

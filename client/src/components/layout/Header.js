@@ -1,5 +1,5 @@
 // src/components/layout/Header.js - Enhanced Modern Header
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -9,8 +9,6 @@ import {
   Bars3Icon,
   XMarkIcon,
   UserIcon,
-  MagnifyingGlassIcon,
-  BellIcon,
   HeartIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,

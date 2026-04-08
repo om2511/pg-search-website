@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
 
@@ -7,21 +7,9 @@ const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchWishlist();
-    } else {
-      // Load from localStorage for non-authenticated users
-      const savedWishlist = localStorage.getItem('wishlist');
-      if (savedWishlist) {
-        setWishlist(JSON.parse(savedWishlist));
-      }
-    }
-  }, [isAuthenticated]);
-
-  const fetchWishlist = async () => {
+  const fetchWishlist = useCallback(async () => {
     if (!isAuthenticated) return;
     
     setLoading(true);
@@ -36,7 +24,19 @@ export const WishlistProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchWishlist();
+    } else {
+      // Load from localStorage for non-authenticated users
+      const savedWishlist = localStorage.getItem('wishlist');
+      if (savedWishlist) {
+        setWishlist(JSON.parse(savedWishlist));
+      }
+    }
+  }, [isAuthenticated, fetchWishlist]);
 
   const addToWishlist = async (pgId) => {
     console.log('Adding to wishlist:', pgId);

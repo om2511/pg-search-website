@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import axios from 'axios';
@@ -9,8 +9,6 @@ import {
   EnvelopeIcon,
   ClockIcon,
   CheckCircleIcon,
-  XMarkIcon,
-  FunnelIcon,
   MagnifyingGlassIcon,
   UserCircleIcon
 } from '@heroicons/react/24/outline';
@@ -24,13 +22,7 @@ const Inquiries = () => {
   const [filter, setFilter] = useState('all'); // all, unread, replied
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    if (user?.role === 'owner') {
-      fetchInquiries();
-    }
-  }, [user]);
-
-  const fetchInquiries = async () => {
+  const fetchInquiries = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/api/owner/inquiries', {
@@ -45,7 +37,13 @@ const Inquiries = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user?.role === 'owner') {
+      fetchInquiries();
+    }
+  }, [user, fetchInquiries]);
 
   const getMockInquiries = () => [
     {

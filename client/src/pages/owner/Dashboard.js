@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -10,12 +10,10 @@ import {
   EyeIcon,
   PlusCircleIcon,
   ChartBarIcon,
-  CalendarIcon,
   PhoneIcon,
   StarIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
   PencilIcon,
@@ -47,13 +45,7 @@ const OwnerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('thisMonth');
 
-  useEffect(() => {
-    if (user?.role === 'owner') {
-      fetchDashboardData();
-    }
-  }, [user]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const [statsRes, pgsRes, inquiriesRes] = await Promise.all([
@@ -100,7 +92,13 @@ const OwnerDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user?.role === 'owner') {
+      fetchDashboardData();
+    }
+  }, [user, fetchDashboardData]);
 
   const handleDeletePG = async (pgId) => {
     if (!window.confirm('Are you sure you want to delete this PG listing?')) return;

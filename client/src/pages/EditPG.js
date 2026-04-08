@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -8,7 +8,6 @@ import {
   MapPinIcon,
   CurrencyRupeeIcon,
   PhotoIcon,
-  UserGroupIcon,
   CheckCircleIcon,
   XMarkIcon,
   PlusIcon,
@@ -57,13 +56,7 @@ const EditPG = () => {
     'power_backup', 'cctv', 'study_room', 'recreation_room'
   ];
 
-  useEffect(() => {
-    if (user?.role === 'owner') {
-      fetchPGDetails();
-    }
-  }, [id, user]);
-
-  const fetchPGDetails = async () => {
+  const fetchPGDetails = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`/api/pgs/${id}`, {
@@ -102,7 +95,13 @@ const EditPG = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate, showError]);
+
+  useEffect(() => {
+    if (user?.role === 'owner') {
+      fetchPGDetails();
+    }
+  }, [user, fetchPGDetails]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -230,7 +229,7 @@ const EditPG = () => {
         submitData.append('images', file);
       });
 
-      const response = await axios.put(`/api/pgs/${id}`, submitData, {
+      await axios.put(`/api/pgs/${id}`, submitData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

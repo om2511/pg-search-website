@@ -15,6 +15,10 @@ export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
   const toastIdCounter = useRef(0);
 
+  const removeToast = useCallback((id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
+
   const addToast = useCallback((type, title, message, duration = 5000) => {
     toastIdCounter.current += 1;
     const id = `${Date.now()}-${toastIdCounter.current}`;
@@ -28,11 +32,7 @@ export const ToastProvider = ({ children }) => {
     }, duration);
     
     return id;
-  }, []);
-
-  const removeToast = useCallback((id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const showSuccess = useCallback((title, message, duration) => {
     return addToast('success', title, message, duration);
