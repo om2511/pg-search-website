@@ -1,4 +1,4 @@
-# <� PG Search Website
+# pg-search-website# <� PG Search Website
 
 A modern, full-stack MERN application for finding and managing Paying Guest (PG) accommodations. Built with React 19, Node.js, Express, and MongoDB, featuring a beautiful UI, comprehensive search functionality, and powerful owner management tools.
 
