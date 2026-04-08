@@ -17,13 +17,29 @@ if (!fs.existsSync(uploadsDir)) {
 const app = express();
 
 // CORS configuration
+const localOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3001',
+];
+
+const configuredOrigins = [
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS || '').split(','),
+]
+  .map((origin) => origin && origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...new Set([...localOrigins, ...configuredOrigins])];
+
 const corsOptions = {
-  origin: [
-    'http://localhost:3000', // React development server
-    'http://127.0.0.1:3000',
-    'http://localhost:3001', // Alternative port
-    // Add production URLs here when deploying
-  ],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
